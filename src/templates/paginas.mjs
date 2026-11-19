@@ -502,7 +502,7 @@ export function privacidade(ctx) {
   const config = {
     alojamento: 'github-pages',
     email: 'outro',
-    emailNome: 'Fornecedor do email do domínio nevoaservices.pt [por confirmar]',
+    emailNome: 'O fornecedor do email @nevoaservices.pt [por confirmar]',
     whatsapp: Boolean(site.whatsapp),
     instagram: true,
     repositorioPublico: true,
@@ -526,7 +526,7 @@ export function privacidade(ctx) {
 }
 
 export function litigios(ctx) {
-  const corpo = `${cabecalho({ rotuloTexto: 'Resolução de litígios', titulo: 'Resolução alternativa de litígios', frase: 'Se não ficar satisfeito com um serviço e não chegarmos a acordo, pode recorrer a uma entidade de resolução alternativa de litígios de consumo.' })}
+  const corpo = `${cabecalho({ rotuloTexto: 'Resolução de litígios', titulo: 'Resolução alternativa de litígios', frase: 'Se não chegarmos a acordo sobre um serviço, estas são as entidades a que pode recorrer.' })}
 <div class="contentor texto">
   ${ralHtml({ ambito: 'local', concelhos: ['Felgueiras', 'Porto'] })}
   <p>Pode também apresentar uma reclamação no <a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener">Livro de Reclamações Eletrónico</a>.</p>
