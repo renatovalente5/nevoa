@@ -1,6 +1,6 @@
-# Pré-visualização no GitHub Pages (noindex): cada envio para a main constrói as imagens, o site (com as três
-# propostas) e as provas, e publica. Quando houver domínio, constrói-se com --producao --url=https://nevoaservices.pt
-# (indexável, com sitemap, sem as propostas).
+# Pré-visualização no GitHub Pages (noindex): cada envio para a main constrói as imagens, o site (a proposta A
+# «Névoa», a escolhida) e as provas, e publica. Quando houver domínio, constrói-se com --producao
+# --url=https://nevoaservices.pt (indexável, com sitemap).
 name: Publicar
 on:
   push:

@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 // Constrói o site em _site/ a partir de content/, media/ (via .cache/imagens) e src/.
 //
-//   node scripts/build.mjs                       pré-visualização local (base /, noindex, com as três propostas)
+//   node scripts/build.mjs                       pré-visualização local (base /, noindex)
 //   node scripts/build.mjs --base=/nevoa --url=https://renatovalente5.github.io/nevoa
-//   node scripts/build.mjs --producao --url=https://nevoaservices.pt   (indexável, com sitemap, sem propostas)
+//   node scripts/build.mjs --producao --url=https://nevoaservices.pt   (indexável, com sitemap)
 //
-// A proposta escolhida (content/site.json → "variante") fica na raiz; com --propostas (por omissão na
-// pré-visualização) as outras duas ficam inteiras em /propostas/<letra>/ e todas as páginas levam a barra para trocar.
+// A proposta escolhida (content/site.json → "variante"; o Renato escolheu a A «Névoa» a 19 nov 2026) é o site.
+// Só com --propostas (localmente, para comparar) as outras duas ficam inteiras em /propostas/<letra>/ e todas as
+// páginas levam a barra para trocar.
 //
 // Antes: python3 scripts/imagens.py (gera .cache/imagens e o manifesto).
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
@@ -26,7 +27,7 @@ const opcoes = {
   url: arg('url', 'http://127.0.0.1:5210').replace(/\/$/, ''),
   producao,
   preview: !producao,
-  propostas: !producao && !process.argv.includes('--sem-propostas'),
+  propostas: !producao && process.argv.includes('--propostas'),
   saida: join(RAIZ, arg('saida', '_site')),
 };
 
@@ -74,12 +75,13 @@ const escreverAsset = (chave, conteudoTxt, ext) => {
 };
 escreverAsset('site', css, 'css');
 escreverAsset('site', readFileSync(join(RAIZ, 'src', 'scripts', 'site.js'), 'utf8'), 'js');
-escreverAsset('nevoa', readFileSync(join(RAIZ, 'src', 'scripts', 'nevoa.js'), 'utf8'), 'js');
-escreverAsset('vidro', readFileSync(join(RAIZ, 'src', 'scripts', 'vidro.js'), 'utf8'), 'js');
+// a névoa (A) e o vidro (C) só vão quando essa proposta é construída
+const variantes = opcoes.propostas ? [site.variante, ...Object.keys(VARIANTES).filter((k) => k !== site.variante)] : [site.variante];
+if (variantes.includes('a')) escreverAsset('nevoa', readFileSync(join(RAIZ, 'src', 'scripts', 'nevoa.js'), 'utf8'), 'js');
+if (variantes.includes('c')) escreverAsset('vidro', readFileSync(join(RAIZ, 'src', 'scripts', 'vidro.js'), 'utf8'), 'js');
 
 // ---- páginas, por proposta ----
 const usados = new Set();
-const variantes = opcoes.propostas ? [site.variante, ...Object.keys(VARIANTES).filter((k) => k !== site.variante)] : [site.variante];
 const escrever = (caminho, html) => {
   const destino = caminho.endsWith('.html') ? join(opcoes.saida, caminho) : join(opcoes.saida, caminho, 'index.html');
   mkdirSync(dirname(destino), { recursive: true });

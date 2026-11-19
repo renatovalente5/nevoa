@@ -90,7 +90,7 @@ function cartoesServicos(ctx, { sizes = '(min-width: 900px) 560px, 92vw' } = {})
     <div class="servico-cartao__corpo">
       ${estadoEtiqueta('ativo')}
       <h3><a href="${ctx.href('/limpeza/')}" class="servico-cartao__ligacao">Limpeza profissional</a></h3>
-      <p>Casas, empresas, condomínios, alojamento local e pós-obra, com produtos profissionais.</p>
+      <p>Regular, profunda ou pós-obra, com produtos profissionais.</p>
       <span class="seta-circulo" aria-hidden="true">${icone.seta}</span>
     </div>
   </article>
@@ -99,7 +99,7 @@ function cartoesServicos(ctx, { sizes = '(min-width: 900px) 560px, 92vw' } = {})
     <div class="servico-cartao__corpo">
       ${estadoEtiqueta('em-breve')}
       <h3><a href="${ctx.href('/lavandaria/')}" class="servico-cartao__ligacao">Lavandaria &amp; Engomadoria</a></h3>
-      <p>Lavar, secar e engomar, com recolha e entrega ao domicílio. Abre em breve, em Felgueiras.</p>
+      <p>Lavar, secar e engomar, com recolha e entrega ao domicílio.</p>
       <span class="seta-circulo" aria-hidden="true">${icone.seta}</span>
     </div>
   </article>
@@ -134,7 +134,6 @@ function nossaCasa(ctx, { titulo = 'A nossa casa, em Felgueiras' } = {}) {
   <div class="casa__texto">
     ${rotulo('A nossa loja')}
     <h2 class="titulo-seccao" id="t-casa">${titulo}</h2>
-    <p>Um espaço, dois serviços. A limpeza já está no terreno; a lavandaria e engomadoria abre aqui em breve.</p>
     <p class="casa__morada">${icone.local}<span>${esc(site.morada.rua)}<br>${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}</span></p>
     <div class="casa__acoes">
       <a class="botao botao--linha" href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a>
@@ -188,7 +187,7 @@ ${seccao({ id: 'antes-e-depois', classe: 'seccao--ad', corpo: `<div class="ad-bl
   <div class="ad-bloco__texto">
     ${rotulo('Antes e depois')}
     <h2 class="titulo-seccao" id="t-antes-e-depois">Do pó da obra à perfeição</h2>
-    <p>Uma moradia acabada de construir, entregue pronta a habitar: poeiras, resíduos, vidros e pavimentos, divisão a divisão.</p>
+    <p>Uma moradia acabada de construir, entregue pronta a habitar, divisão a divisão.</p>
     <a class="ligacao-seta" href="${ctx.href('/limpeza/')}#antes-e-depois">Ver mais resultados ${icone.seta}</a>
   </div>
   ${antesDepois(ctx)}
@@ -218,7 +217,7 @@ ${seccao({ id: 'antes-e-depois', classe: 'seccao--ad', corpo: `<div class="ad-bl
   <div class="ad-bloco__texto">
     ${rotulo('Antes e depois')}
     <h2 class="titulo-seccao" id="t-antes-e-depois">Do pó da obra à perfeição</h2>
-    <p>Uma moradia acabada de construir, entregue pronta a habitar: poeiras, resíduos, vidros e pavimentos, divisão a divisão.</p>
+    <p>Uma moradia acabada de construir, entregue pronta a habitar, divisão a divisão.</p>
     <a class="ligacao-seta" href="${ctx.href('/limpeza/')}#antes-e-depois">Ver mais resultados ${icone.seta}</a>
   </div>
   ${antesDepois(ctx)}
