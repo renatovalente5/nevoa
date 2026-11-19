@@ -1,0 +1,21 @@
+{
+  "posobra-cozinha-antes": { "alt": "Cozinha de uma moradia acabada de construir, com pó e marcas de obra na bancada e no chão", "foco": 50 },
+  "posobra-cozinha-depois": { "alt": "A mesma cozinha depois da limpeza pós-obra da NEVOA, com a bancada e o chão a brilhar", "foco": 50 },
+  "posobra-casa-de-banho-antes": { "alt": "Casa de banho em pedra cinzenta com pó de obra no chão e no duche", "foco": 50 },
+  "posobra-casa-de-banho-depois": { "alt": "A mesma casa de banho depois da limpeza, com o chão e o vidro do duche limpos", "foco": 50 },
+  "posobra-duche-antes": { "alt": "Base de duche em travertino coberta de pó e resíduos de obra", "foco": 50 },
+  "posobra-duche-depois": { "alt": "A mesma base de duche limpa, com a pedra e a parede sem marcas", "foco": 50 },
+  "posobra-lavatorio-antes": { "alt": "Bancada de lavatório em madeira com pó da obra e restos de materiais", "foco": 50 },
+  "posobra-lavatorio-depois": { "alt": "A mesma bancada de lavatório limpa, com as louças e a madeira sem pó", "foco": 50 },
+  "posobra-janela-antes": { "alt": "Quarto com o chão de madeira cheio de pó e pegadas da obra, junto a uma janela grande", "foco": 50 },
+  "posobra-janela-depois": { "alt": "O mesmo quarto limpo, com o chão de madeira sem pó e um tapete pousado", "foco": 50 },
+  "posobra-quarto-antes": { "alt": "Sala com chão de pedra manchado de pó e marcas de obra, diante de uma janela de sacada", "foco": 50 },
+  "posobra-quarto-depois": { "alt": "A mesma sala com o chão de pedra limpo e polido, a refletir a luz da janela", "foco": 50 },
+  "posobra-escada-antes": { "alt": "Escada em pedra com guarda de vidro, coberta de pó e resíduos de obra", "foco": 50 },
+  "posobra-escada-depois": { "alt": "A mesma escada depois da limpeza, com os degraus e o vidro sem pó", "foco": 50 },
+  "loja-letreiro": { "alt": "O letreiro iluminado da NEVOA, Lavandaria e Limpeza, numa parede de ripas de madeira na loja de Felgueiras", "foco": 50 },
+  "loja-fachada": { "alt": "A fachada da loja da NEVOA em Felgueiras, com o nome e os serviços nas montras", "foco": 45 },
+  "marca-lavandaria": { "alt": "Toalhas dobradas sobre um cesto da NEVOA, diante de máquinas de lavar", "foco": 60 },
+  "marca-limpeza": { "alt": "Profissional da NEVOA a limpar um chão de pedra com uma mopa", "foco": 50 },
+  "marca-engomadoria": { "alt": "Camisa branca a ser engomada com um ferro a vapor", "foco": 50 }
+}

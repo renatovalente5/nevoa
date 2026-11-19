@@ -1,0 +1,29 @@
+{
+  "marca": "NEVOA Premium Services",
+  "marcaCurta": "NEVOA",
+  "titulo": "NEVOA Premium Services — limpeza profissional e lavandaria em Felgueiras",
+  "descricao": "Limpeza profissional para casas, empresas, condomínios, alojamento local e pós-obra, e lavandaria e engomadoria com recolha e entrega. Em Felgueiras e em todo o distrito do Porto.",
+  "lema": "Onde cada detalhe conta.",
+  "frase": "Somos premium por escolha, e não por preço.",
+  "telefone": "910 079 994",
+  "whatsapp": "351910079994",
+  "email": "geral@nevoaservices.pt",
+  "instagram": "nevoaservices",
+  "morada": {
+    "rua": "Rua Dr. Francisco Dias da Cunha, Lote 5, Porta 62",
+    "codigoPostal": "4610-282",
+    "localidade": "Felgueiras",
+    "concelho": "Felgueiras",
+    "distrito": "Porto"
+  },
+  "mapa": "https://www.google.com/maps/search/?api=1&query=Rua%20Dr.%20Francisco%20Dias%20da%20Cunha%2062%2C%204610-282%20Felgueiras",
+  "horario": { "texto": "Segunda a sábado, das 8h às 20h", "curto": "Seg. a sáb., 8h–20h", "schema": "Mo-Sa 08:00-20:00" },
+  "desde": "2026-10-01",
+  "zona": {
+    "resumo": "Felgueiras e todo o distrito do Porto",
+    "curto": "Felgueiras e distrito do Porto",
+    "concelhos": ["Felgueiras", "Lousada", "Paços de Ferreira", "Penafiel", "Paredes", "Valongo", "Gondomar", "Porto", "Matosinhos", "Maia", "Santo Tirso", "Vila do Conde", "Póvoa de Varzim"]
+  },
+  "empresa": { "firma": null, "nif": null },
+  "variante": "a"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "nevoa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "imagens": "python3 scripts/imagens.py",
+    "build": "node scripts/build.mjs",
+    "test": "node scripts/testar.mjs"
+  }
+}
