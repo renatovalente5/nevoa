@@ -145,6 +145,8 @@ export const icone = {
   farda: T('<path d="M9 3.5 5 6v14.5h14V6l-4-2.5L12 7.5z"/><path d="M12 7.5v13M8 14h1.5M14.5 14H16"/>'),
   ferro: T('<path d="M3.5 17.5h17c0-4.1-3.2-7-7.2-7H8.2c-2.4 0-4.2 3-4.7 7Z"/><path d="M9.5 10.5l1-4h6.5"/>'),
   cortina: T('<path d="M3.5 4.5h17M6 4.5v16M18 4.5v16M6 4.5c0 6 2.8 10 5 16M18 4.5c0 6-2.8 10-5 16"/>'),
+  // uma pilha de têxteis dobrados (o desenho das cortinas lia-se como um «M»)
+  texteis: T('<rect x="4" y="4.5" width="16" height="4.5" rx="1.6"/><rect x="4" y="10" width="16" height="4.5" rx="1.6"/><rect x="4" y="15.5" width="16" height="4.5" rx="1.6"/><path d="M15 6.8h2.5M15 12.3h2.5M15 17.8h2.5"/>'),
   sapato: T('<path d="M3.5 17V9.5l4 1.5 2-2.5 3 3.5 6 2.3a2.2 2.2 0 0 1 2 2.2v1Z"/><path d="M3.5 20h17"/>'),
   hotel: T('<path d="M5 17.5a7 7 0 0 1 14 0M3.5 17.5h17M12 8V10.5M10.5 8h3M3.5 20.5h17"/>'),
   carrinha: T('<path d="M2.5 16.5v-9h11v9M13.5 10h4l3 3.5v3h-1.7"/><circle cx="7" cy="17" r="1.8"/><circle cx="16.8" cy="17" r="1.8"/><path d="M9 17h5.9"/>'),

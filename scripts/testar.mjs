@@ -77,9 +77,15 @@ prova(/<p class="rotulo">Cleaning · Laundry · Express<\/p>/.test(inicio), 'in�
 const intro = inicio.match(/data-horizontal="([^"]+)" data-vertical="([^"]+)"/);
 prova(intro && existe(intro[1]) && existe(intro[2]), 'início: a intro não tem os dois vídeos');
 prova(!/data-intro/.test(ler('limpeza/index.html')), 'a intro só vai na página inicial');
-for (const f of ['limpeza/index.html', 'empresas/index.html']) prova(/Espaços de coworking/.test(ler(f)), `${f}: falta o coworking`);
+for (const f of ['limpeza/index.html', 'empresas/index.html']) prova(/Espaços de[\s\u00A0]coworking/.test(ler(f)), `${f}: falta o coworking`);
 for (const f of ['limpeza/index.html', 'empresas/index.html', 'index.html']) prova(/Centros empresariais/.test(ler(f)) && /Unidades hoteleiras/.test(ler(f)), `${f}: faltam os centros empresariais ou a hotelaria`);
-prova(/Distrito de Braga/.test(ler('contactos/index.html')) && /qualquer parte do Norte/.test(ler('contactos/index.html')), 'contactos: a zona não tem o Norte e Braga');
+prova(/distritos do Porto e de Braga/.test(ler('contactos/index.html')) && /qualquer parte do[\s\u00A0]Norte/.test(ler('contactos/index.html')), 'contactos: a zona não tem o Norte e Braga');
+// a revisão de 21 nov: títulos sem palavras curtas soltas nem hífen partido; legais no Acordo Ortográfico; rodapé sem contactos repetidos
+prova(/perdeu-se<\/span>/.test(ler('404.html')) && /class="nw">perdeu-se/.test(ler('404.html')), '404: «perdeu-se» pode partir no hífen');
+for (const f of ['privacidade/index.html', 'litigios/index.html']) prova(!/rectifica|afect|Protec|actualiza|co-responsab/.test(ler(f)), `${f}: grafia antiga`);
+prova(!/por indicar|Facebook e\/ou/.test(ler('privacidade/index.html')), 'privacidade: marcas por preencher no email ou no Facebook');
+for (const p of paginas) prova(!/rodape__contactos/.test(readFileSync(p, 'utf8')), `${p.slice(SITE.length)}: o rodapé voltou a ter a coluna dos contactos`);
+prova(!/Uma só NEVOA/.test(inicio), 'início: voltou o «Uma só NEVOA»');
 for (const p of paginas) prova(!/todo o distrito do Porto|distrito do Porto\.<\/p>|Felgueiras e distrito do Porto/.test(readFileSync(p, 'utf8')), `${p.slice(SITE.length)}: ainda diz só o distrito do Porto`);
 prova(/CIAB/.test(ler('litigios/index.html')), 'litígios: falta o CIAB (distrito de Braga)');
 prova(/em breve/i.test(ler('lavandaria/index.html')) && /Em breve/.test(inicio), 'a lavandaria deixou de dizer «Em breve»');

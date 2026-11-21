@@ -136,12 +136,10 @@ function rodape(ctx) {
         <a href="mailto:${site.email}" class="redonda">${icone.email}<span class="sr">Email</span></a>
       </p>
     </div>
-    <nav class="rodape__coluna" aria-label="Divisões">
-      <h2 class="rodape__titulo">Divisões</h2>
+    <nav class="rodape__coluna" aria-label="Serviços">
+      <h2 class="rodape__titulo">Serviços</h2>
       <ul>
-        ${ctx.conteudo.divisoes.map((d) => `<li><a href="${ctx.href(d.pagina)}">${esc(d.nome)}</a></li>`).join('\n        ')}
-        <li><a href="${ctx.href('/empresas/')}">Limpeza para empresas</a></li>
-        <li><a href="${ctx.href('/limpeza/')}#pos-obra">Limpeza pós-obra</a></li>
+        ${ctx.conteudo.divisoes.map((d) => `<li><a href="${ctx.href(d.pagina)}">${esc(d.nome)}</a></li>${d.slug === 'cleaning' ? `\n        <li><a href="${ctx.href('/empresas/')}">Limpeza para empresas</a></li>` : ''}`).join('\n        ')}
       </ul>
     </nav>
     <nav class="rodape__coluna" aria-label="A NEVOA">
@@ -150,18 +148,9 @@ function rodape(ctx) {
         <li><a href="${ctx.href('/a-nevoa/')}">Quem somos</a></li>
         <li><a href="${ctx.href('/limpeza/')}#antes-e-depois">Antes e depois</a></li>
         <li><a href="${ctx.href('/contactos/')}#zona">Onde trabalhamos</a></li>
-        <li><a href="${ctx.href('/contactos/')}#pedido">Pedir orçamento</a></li>
+        <li><a href="${ctx.href('/contactos/')}">Contactos</a></li>
       </ul>
     </nav>
-    <div class="rodape__coluna">
-      <h2 class="rodape__titulo">Fale connosco</h2>
-      <ul class="rodape__contactos">
-        ${wa ? `<li><a href="${wa}" target="_blank" rel="noopener"><span class="rodape__icone">${icone.whatsapp}</span>WhatsApp</a></li>` : ''}
-        <li><span class="rodape__icone">${icone.telefone}</span><span>${telefoneHtml(site.telefone, { frase: 'com-a', comIndicativo: false })}</span></li>
-        <li><a href="mailto:${site.email}"><span class="rodape__icone">${icone.email}</span>${esc(site.email)}</a></li>
-        <li><span class="rodape__icone">${icone.local}</span><span>${esc(site.zona.resumo)}</span></li>
-      </ul>
-    </div>
   </div>
   <div class="contentor rodape__legal">
     <p>© ${ano} ${esc(site.marca)}</p>

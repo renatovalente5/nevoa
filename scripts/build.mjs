@@ -105,6 +105,17 @@ const escrever = (caminho, html) => {
   mkdirSync(dirname(destino), { recursive: true });
   writeFileSync(destino, html.normalize('NFC'));
 };
+// Tipografia dos títulos (h1–h3): as palavras curtas («e», «o», «à», «um», «até»…) agarram-se à seguinte, para não
+// ficarem sozinhas no fim da linha («por escolha, e / não por preço»), e as palavras com hífen não partem no hífen
+// («perdeu- / se»). Só no texto, nunca dentro das etiquetas.
+const CURTAS = /(^|[\s>(«])(e|o|a|os|as|é|à|às|ao|aos|um|uma|de|do|da|em|no|na|se|só|até) (?=[^\s<])/giu;
+const tipografiaTexto = (t) => t.replace(CURTAS, '$1$2 ').replace(CURTAS, '$1$2 ').replace(/([\p{L}\d]+(?:-[\p{L}\d]+)+)/gu, '<span class="nw">$1</span>');
+const tipografia = (html) => html.replace(/<(h[123])([^>]*)>([\s\S]*?)<\/\1>/g, (_, tag, attrs, dentro) =>
+  `<${tag}${attrs}>${dentro.split(/(<[^>]+>)/).map((parte) => (parte.startsWith('<') ? parte : tipografiaTexto(parte))).join('')}</${tag}>`);
+// As páginas legais vêm do legal-comum, ainda na grafia antiga: aqui ficam no Acordo Ortográfico, como o resto do site.
+const AO90 = { rectificação: 'retificação', afectar: 'afetar', 'Protecção': 'Proteção', protecção: 'proteção', actualizada: 'atualizada', actualizado: 'atualizado', 'co-responsabilidade': 'corresponsabilidade', efectuar: 'efetuar', objecto: 'objeto', direcção: 'direção', colectiva: 'coletiva' };
+const ortografia = (html) => html.replace(new RegExp(Object.keys(AO90).join('|'), 'g'), (m) => AO90[m]);
+
 let nPaginas = 0;
 const todas = [];
 for (const variante of variantes) {
@@ -115,7 +126,9 @@ for (const variante of variantes) {
   const paginas = [P.inicio(ctx), P.limpeza(ctx), P.empresas(ctx), P.lavandaria(ctx), P.express(ctx), P.sobre(ctx), P.contactos(ctx), P.privacidade(ctx), P.litigios(ctx)];
   if (!prefixo) paginas.push(P.naoEncontrada(ctx));
   for (const p of paginas) {
-    escrever(prefixo + p.caminho, pagina(ctx, p));
+    let html = tipografia(pagina(ctx, p));
+    if (p.ortografia) html = ortografia(html);
+    escrever(prefixo + p.caminho, html);
     nPaginas++;
     if (!prefixo) todas.push({ ...p, abs: ctx.absPagina(p.caminho) });
   }

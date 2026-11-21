@@ -39,11 +39,11 @@ const negocio = (ctx) => {
     telephone: '+351' + site.telefone.replace(/\s/g, ''),
     email: site.email,
     address: { '@type': 'PostalAddress', streetAddress: site.morada.rua, postalCode: site.morada.codigoPostal, addressLocality: site.morada.localidade, addressRegion: site.morada.distrito, addressCountry: 'PT' },
-    areaServed: site.zona.regioes.map((r) => ({ '@type': 'AdministrativeArea', name: r === 'Todo o Norte' ? 'Região Norte, Portugal' : r })),
+    areaServed: site.zona.areas.map((r) => ({ '@type': 'AdministrativeArea', name: r })),
     openingHours: site.horario.schema,
     sameAs: [`https://www.instagram.com/${site.instagram}/`],
     department: ctx.conteudo.divisoes.map((d) => ({ '@type': 'Organization', name: d.nome, description: d.area, url: ctx.absPagina(d.pagina) })),
-    knowsAbout: ['Limpeza profissional', 'Limpeza de casas', 'Limpeza de escritórios', 'Limpeza de espaços de coworking', 'Limpeza de centros empresariais', 'Limpeza de unidades hoteleiras', 'Limpeza pós-obras', 'Limpeza de condomínios', 'Limpeza de alojamento local', 'Lavandaria', 'Engomadoria', 'Recolhas e entregas'],
+    knowsAbout: ['Limpeza profissional', 'Limpeza de casas', 'Limpeza de escritórios', 'Limpeza de espaços de coworking', 'Limpeza de centros empresariais', 'Limpeza de unidades hoteleiras', 'Limpeza pós-obra', 'Limpeza de condomínios', 'Limpeza de alojamento local', 'Lavandaria', 'Engomadoria', 'Recolhas e entregas'],
   };
 };
 
@@ -137,14 +137,17 @@ function antesDepois(ctx, { pares = ctx.conteudo.antesDepois.slice(0, 4), sizes 
   </div>`;
 }
 
+// A morada partida onde se lê bem: a rua; o lote e a porta; o código postal e a localidade.
+const moradaHtml = (site) => { const [rua, ...resto] = site.morada.rua.split(', '); return `${esc(rua)},<br>${esc(resto.join(', '))}<br>${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}`; };
+
 function nossaCasa(ctx, { titulo = 'A nossa casa, em Felgueiras' } = {}) {
   const { site } = ctx;
   return `<div class="casa">
   <div class="casa__foto">${foto(ctx, 'loja-fachada', { sizes: '(min-width: 900px) 560px, 92vw' })}</div>
   <div class="casa__texto">
-    ${rotulo('A nossa loja')}
+    ${rotulo('Sede e loja')}
     <h2 class="titulo-seccao" id="t-casa">${titulo}</h2>
-    <p class="casa__morada">${icone.local}<span>${esc(site.morada.rua)}<br>${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}</span></p>
+    <p class="casa__morada">${icone.local}<span>${moradaHtml(site)}</span></p>
     <div class="casa__acoes">
       <a class="botao botao--linha" href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a>
       <a class="ligacao-seta" href="${ctx.href('/a-nevoa/')}">Conhecer a NEVOA ${icone.seta}</a>
@@ -181,7 +184,9 @@ export function inicio(ctx) {
 
 // O sobretítulo e a frase da capa: as divisões do grupo e o que já está a funcionar.
 const rotuloCapa = (ctx) => ctx.conteudo.divisoes.map((d) => esc(d.curto)).join(' · ');
-const FRASE_CAPA = 'Limpezas profissionais para casas e empresas. Em breve, também lavandaria e engomadoria, com recolhas e entregas ao domicílio.';
+const FRASE_CAPA = 'Limpezas profissionais para casas e empresas. Em breve, lavandaria e engomadoria, com recolha e entrega ao domicílio.';
+// o título das divisões: a frase da própria NEVOA no destaque «Os nossos serviços»
+const TITULO_DIVISOES = 'Tudo o que precisa. Um único parceiro.';
 
 // A «Névoa»: preto e dourado, a névoa dourada a mexer devagar atrás do título (WebGL, parada com movimento reduzido).
 function inicioA(ctx) {
@@ -197,7 +202,7 @@ function inicioA(ctx) {
     ${confianca(ctx)}
   </div>
 </section>
-${seccao({ id: 'servicos', rot: 'As nossas divisões', titulo: 'Uma só NEVOA', corpo: cartoesDivisoes(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
+${seccao({ id: 'servicos', rot: 'As nossas divisões', titulo: TITULO_DIVISOES, corpo: cartoesDivisoes(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
 ${seccao({ id: 'antes-e-depois', classe: 'seccao--ad', corpo: `<div class="ad-bloco">
   <div class="ad-bloco__texto">
     ${rotulo('Antes e depois')}
@@ -227,7 +232,7 @@ function inicioB(ctx) {
     </div>
   </div>
 </section>
-${seccao({ id: 'servicos', rot: 'As nossas divisões', titulo: 'Uma só NEVOA', corpo: cartoesDivisoes(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
+${seccao({ id: 'servicos', rot: 'As nossas divisões', titulo: TITULO_DIVISOES, corpo: cartoesDivisoes(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
 ${seccao({ id: 'antes-e-depois', classe: 'seccao--ad', corpo: `<div class="ad-bloco">
   <div class="ad-bloco__texto">
     ${rotulo('Antes e depois')}
@@ -299,7 +304,7 @@ function inicioC(ctx) {
 // ---------- serviços ----------
 
 const divisao = (ctx, slug) => ctx.conteudo.divisoes.find((d) => d.slug === slug);
-const rotuloDivisao = (ctx, slug, extra) => { const d = divisao(ctx, slug); return `${esc(d.nome)} · ${extra ? esc(extra) : esc(d.area)}`; };
+const rotuloDivisao = (ctx, slug, extra) => { const d = divisao(ctx, slug); return `${esc(d.nome)}<span class="rotulo__area"> · ${extra ? esc(extra) : esc(d.area)}</span>`; };
 
 export function limpeza(ctx) {
   const c = ctx.conteudo;
@@ -310,16 +315,16 @@ export function limpeza(ctx) {
     frase: 'Serviços profissionais de limpeza, com soluções personalizadas e adaptadas às necessidades de cada cliente. Para casas e empresas, em todo o Norte.',
     acoes: `${botaoPedido(ctx, 'casa')}${botaoWhatsapp(ctx)}`,
   })}
-${seccao({ id: 'espacos', rot: 'Onde atuamos', titulo: 'Uma solução para cada espaço', corpo: `<ul class="grelha-cartoes grelha-cartoes--5" role="list">
+${seccao({ id: 'espacos', rot: 'Onde atuamos', titulo: 'Uma solução para cada espaço', corpo: `<ul class="grelha-cartoes" role="list">
   ${c.espacos.map((e) => `<li class="cartao" id="${e.slug}">
     <span class="circulo-icone">${icone[e.icone]}</span>
     <h3>${esc(e.nome)}</h3>
     <p>${esc(e.linha)}</p>
-    ${e.pagina === 'empresas' ? `<a class="ligacao-seta" href="${ctx.href('/empresas/')}">Para empresas ${icone.seta}</a>` : ''}
   </li>`).join('\n  ')}
-</ul>` })}
-${seccao({ id: 'tipos', rot: 'O que fazemos', titulo: 'Soluções completas de limpeza', corpo: `<div class="dividido">
-  <div class="dividido__media">${foto(ctx, 'marca-limpeza', { sizes: '(min-width: 900px) 420px, 92vw' })}</div>
+</ul>
+<p class="grelha-ligacao"><a class="ligacao-seta" href="${ctx.href('/empresas/')}">Limpeza para empresas ${icone.seta}</a></p>` })}
+${seccao({ id: 'tipos', rot: 'O que fazemos', titulo: 'Os nossos serviços de limpeza', corpo: `<div class="dividido">
+  <div class="dividido__media">${video(ctx, 'vidros', { rotulo: 'A equipa da NEVOA a limpar uma janela ao pôr do sol' })}</div>
   <ul class="lista-check" role="list">
     ${c.tiposLimpeza.map((t) => `<li>${icone.check}<div><h3>${esc(t.nome)}</h3><p>${esc(t.linha)}</p></div></li>`).join('\n    ')}
   </ul>
@@ -338,11 +343,19 @@ ${seccao({ id: 'porque', rot: 'Porquê a NEVOA', titulo: 'Mais do que limpeza. C
     caminho: '/limpeza/',
     titulo: 'Limpezas profissionais em Felgueiras e no Norte',
     ogTitulo: 'NEVOA Cleaning — limpezas profissionais',
-    descricao: 'Limpeza regular, profunda e pós-obras para casas, empresas, coworkings, condomínios e hotelaria, em Felgueiras e em todo o Norte. Orçamento sem compromisso.',
+    descricao: 'Limpeza regular, profunda e pós-obra para casas, empresas, coworkings, condomínios e hotelaria, em Felgueiras e em todo o Norte. Orçamento sem compromisso.',
     seccao: 'limpeza',
     corpo,
     jsonLd: [migalhas(ctx, [['NEVOA Cleaning', '/limpeza/']])],
   };
+}
+
+// O compromisso da NEVOA nas quatro palavras do João (a carta às empresas): qualidade, profissionalismo, rigor e
+// flexibilidade. Na página «A NEVOA», em vez de repetir os seis cartões do «Porquê a NEVOA» da limpeza.
+function pilares(ctx) {
+  return `<ul class="grelha-cartoes grelha-cartoes--pilares" role="list">
+  ${ctx.conteudo.pilares.map((p) => `<li class="cartao cartao--simples"><span class="circulo-icone">${icone[p.icone]}</span><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></li>`).join('\n  ')}
+</ul>`;
 }
 
 function porque(ctx) {
@@ -360,16 +373,15 @@ export function empresas(ctx) {
     frase: 'Um parceiro de limpeza com um plano feito para a sua operação: qualidade, profissionalismo, rigor e flexibilidade, com um acompanhamento próximo.',
     acoes: `${botaoPedido(ctx, 'empresa', 'Agendar uma reunião ou visita')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de agendar uma reunião ou uma visita para a limpeza da minha empresa.')}`,
   })}
-${seccao({ id: 'espacos', rot: 'Onde atuamos', titulo: 'Soluções para todo o tipo de empresa', corpo: `<ul class="grelha-cartoes grelha-cartoes--5" role="list">
+${seccao({ id: 'espacos', rot: 'Onde atuamos', titulo: 'Soluções para cada tipo de empresa', corpo: `<ul class="grelha-cartoes grelha-cartoes--5" role="list">
   ${deEmpresa.map((e) => `<li class="cartao" id="${e.slug}"><span class="circulo-icone">${icone[e.icone]}</span><h3>${esc(e.nome)}</h3><p>${esc(e.linha)}</p></li>`).join('\n  ')}
 </ul>` })}
 ${seccao({ id: 'como-trabalhamos', rot: 'Como trabalhamos', titulo: 'Da avaliação ao acompanhamento', corpo: `<div class="dividido dividido--inverso">
   <ol class="passos" role="list">
     ${c.passosEmpresas.map((p, i) => `<li class="passo"><span class="passo__n">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></div></li>`).join('\n    ')}
   </ol>
-  <div class="dividido__media">${video(ctx, 'equipa', { rotulo: 'A equipa da NEVOA, de farda, a limpar' })}</div>
-</div>` })}
-${seccao({ id: 'porque', rot: 'Porquê a NEVOA', titulo: 'Mais do que limpeza, um parceiro', corpo: porque(ctx) })}`;
+  <div class="dividido__media">${foto(ctx, 'posobra-escada-depois', { sizes: '(min-width: 900px) 420px, 92vw', alt: 'Escada em pedra com guarda de vidro, limpa pela NEVOA' })}</div>
+</div>` })}`;
   return {
     caminho: '/empresas/',
     titulo: 'Limpeza para empresas, escritórios, coworkings e indústria',
@@ -386,11 +398,11 @@ export function lavandaria(ctx) {
   const corpo = `${cabecalho({
     rotuloTexto: rotuloDivisao(ctx, 'laundry'),
     titulo: 'Cuidamos das suas peças. <span class="dourado">Cuidamos do seu tempo.</span>',
-    estado: '<span class="etiqueta etiqueta--breve">Abertura em breve, em Felgueiras</span>',
-    frase: 'Lavar, secar e engomar, com recolha e entrega ao domicílio. Para particulares e empresas, na nossa nova loja de Felgueiras.',
+    estado: estadoEtiqueta(divisao(ctx, 'laundry').estado),
+    frase: 'Lavar, secar e engomar, para particulares e empresas, na nossa nova loja de Felgueiras.',
     acoes: `${botaoPedido(ctx, 'lavandaria', 'Pedir informações')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de saber mais sobre a lavandaria da NEVOA.')}`,
   })}
-${seccao({ id: 'o-que-tratamos', rot: 'O que tratamos', titulo: 'Todo o tipo de roupa, com o máximo cuidado', corpo: `<ul class="grelha-cartoes grelha-cartoes--4" role="list">
+${seccao({ id: 'o-que-tratamos', rot: 'O que tratamos', titulo: 'Todo o tipo de roupa e têxteis', corpo: `<ul class="grelha-cartoes grelha-cartoes--4" role="list">
   ${c.roupa.map((r) => `<li class="cartao cartao--simples"><span class="circulo-icone">${icone[r.icone]}</span><h3>${esc(r.nome)}</h3><p>${esc(r.linha)}</p></li>`).join('\n  ')}
 </ul>` })}
 ${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Simples, cómodo e sem complicações', corpo: `<div class="dividido">
@@ -404,7 +416,7 @@ ${seccao({ id: 'recolha', classe: 'seccao--recolha', corpo: `<div class="faixa">
   <div class="faixa__texto">
     ${rotulo(esc(divisao(ctx, 'express').nome))}
     <h2 class="titulo-seccao" id="t-recolha">Nós vamos até si.</h2>
-    <p>Escolha o dia e a hora. Recolhemos a roupa em sua casa ou na sua empresa, tratamos de tudo e devolvemo-la pronta a usar.</p>
+    <p>Escolha o dia e a hora: recolhemos a roupa em sua casa ou na sua empresa e devolvemo-la no dia combinado.</p>
   </div>
   <a class="botao botao--ouro" href="${ctx.href(divisao(ctx, 'express').pagina)}">Conhecer a ${esc(divisao(ctx, 'express').nome)}</a>
 </div>` })}`;
@@ -427,12 +439,12 @@ export function express(ctx) {
   const d = divisao(ctx, 'express');
   const corpo = `${cabecalho({
     rotuloTexto: rotuloDivisao(ctx, 'express'),
-    titulo: 'Nós vamos até si. <span class="dourado">Recolhemos e entregamos.</span>',
+    titulo: 'Mais tempo para o que <span class="dourado">realmente importa.</span>',
     estado: estadoEtiqueta(d.estado),
-    frase: 'Recolhemos em sua casa ou na sua empresa, no dia e à hora que escolher, e devolvemos tudo pronto a usar.',
+    frase: 'Vamos buscar e levar a sua roupa, a casa ou à empresa, no dia e à hora que escolher.',
     acoes: `${botaoPedido(ctx, 'express', 'Pedir informações')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de saber mais sobre as recolhas e entregas da NEVOA Express.')}`,
   })}
-${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Recolhemos. Cuidamos. Entregamos.', corpo: `<div class="dividido">
+${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Do agendamento à entrega', corpo: `<div class="dividido">
   <div class="dividido__media">${foto(ctx, d.foto, { sizes: '(min-width: 900px) 420px, 92vw' })}</div>
   <ol class="passos" role="list">
     ${c.passosExpress.map((p, i) => `<li class="passo"><span class="passo__n">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></div></li>`).join('\n    ')}
@@ -459,7 +471,7 @@ export function sobre(ctx) {
     <h1 class="cab__titulo">Somos premium por escolha, <span class="dourado">e não por preço.</span></h1>
     <p class="cab__frase">Na NEVOA, ser premium não significa ser mais caro. Significa fazer melhor: cuidar de cada espaço como se fosse nosso, tratar cada peça de roupa com atenção, cumprir horários, responder a quem nos procura e não deixar nenhum detalhe ao acaso.</p>
     <ul class="factos" role="list">
-      <li>${icone.estrela}<span><b>No terreno desde 1 de outubro de 2026</b>, com a limpeza profissional.</span></li>
+      <li>${icone.estrela}<span><b>Limpeza profissional no terreno</b> desde 1 de outubro de 2026.</span></li>
       <li>${icone.local}<span><b>Sede em Felgueiras</b>, a trabalhar em todo o Norte.</span></li>
     </ul>
     <div class="cab__acoes">${botaoPedido(ctx)}<a class="botao botao--linha" href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a></div>
@@ -467,7 +479,7 @@ export function sobre(ctx) {
   <figure class="sobre__foto">${foto(ctx, 'loja-letreiro', { sizes: '(min-width: 900px) 440px, 92vw', prioridade: true })}<figcaption>A nossa loja, na ${esc(site.morada.rua.replace(/, Lote.*$/, ''))}, em Felgueiras.</figcaption></figure>
 </div>
 ${seccao({ id: 'divisoes', rot: esc(site.marca), titulo: 'As nossas divisões', corpo: tabelaDivisoes(ctx) })}
-${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(ctx)} divisões, um só padrão de excelência`, corpo: porque(ctx) })}`;
+${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(ctx)} divisões, um só padrão de excelência`, corpo: pilares(ctx) })}`;
   return {
     caminho: '/a-nevoa/',
     titulo: 'Quem somos',
@@ -496,14 +508,13 @@ export function contactos(ctx) {
       <li class="contacto"><span class="circulo-icone">${icone.telefone}</span><div><h2>Telefone</h2>${telefoneHtml(site.telefone, { frase: 'com-a' })}</div></li>
       <li class="contacto"><span class="circulo-icone">${icone.email}</span><div><h2>Email</h2><a href="mailto:${site.email}">${esc(site.email)}</a></div></li>
       <li class="contacto"><span class="circulo-icone">${icone.relogio}</span><div><h2>Horário</h2><p>${esc(site.horario.texto)}</p></div></li>
-      <li class="contacto"><span class="circulo-icone">${icone.local}</span><div><h2>A nossa loja</h2><p>${esc(site.morada.rua)}<br>${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}</p><a href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a></div></li>
+      <li class="contacto"><span class="circulo-icone">${icone.local}</span><div><h2>A nossa loja</h2><p>${moradaHtml(site)}</p><a href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a></div></li>
       <li class="contacto"><span class="circulo-icone">${icone.instagram}</span><div><h2>Instagram</h2><a href="https://www.instagram.com/${site.instagram}/" target="_blank" rel="noopener">@${esc(site.instagram)}</a></div></li>
     </ul>
     ${pedido(ctx)}
   </div>
 </section>
-${seccao({ id: 'zona', rot: 'Onde trabalhamos', titulo: esc(site.zona.resumo), sub: esc(site.zona.frase), corpo: `<ul class="fichas fichas--zona" role="list">${site.zona.regioes.map((c) => `<li>${icone.local}${esc(c)}</li>`).join('')}</ul>
-  <p class="identificacao">${esc(site.marca)} · ${empresa} · ${esc(site.morada.rua)}, ${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}</p>` })}`;
+${seccao({ id: 'zona', rot: 'Onde trabalhamos', titulo: esc(site.zona.titulo), sub: esc(site.zona.frase), corpo: `<p class="identificacao">${esc(site.marca)} · ${empresa}<br>${esc(site.morada.rua)}, ${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}</p>` })}`;
   return {
     caminho: '/contactos/',
     titulo: 'Contactos e pedido de orçamento',
@@ -519,7 +530,7 @@ function pedido(ctx) {
   const { site } = ctx;
   return `<form class="pedido" id="pedido" data-pedido data-whatsapp="${esc(site.whatsapp || '')}" data-email="${esc(site.email)}" novalidate>
   <h2 class="pedido__titulo">Pedir orçamento</h2>
-  <p class="pedido__nota">Escreva o pedido aqui e envie-o pelo WhatsApp ou por email, já escrito.</p>
+  <p class="pedido__nota">Preencha e envie pelo WhatsApp ou por email: a mensagem segue já escrita.</p>
   <fieldset class="pedido__servicos">
     <legend>O que precisa?</legend>
     <div class="escolhas">
@@ -547,7 +558,7 @@ export function privacidade(ctx) {
   const config = {
     alojamento: 'github-pages',
     email: 'outro',
-    emailNome: 'O fornecedor do email @nevoaservices.pt [por confirmar]',
+    emailNome: 'Dominios.pt (Dominios S.A.)',
     whatsapp: Boolean(site.whatsapp),
     instagram: true,
     repositorioPublico: true,
@@ -557,26 +568,30 @@ export function privacidade(ctx) {
   <h2>Quem é responsável</h2>
   <p>${esc(site.marca)} (${quem}), ${esc(site.morada.rua)}, ${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}. Contacto: <a href="mailto:${site.email}">${esc(site.email)}</a>.</p>
   <h2>Que dados tratamos e para quê</h2>
-  <p>Este site não tem contas, não usa cookies e não guarda nada do que escreve: o formulário do pedido de orçamento só prepara a mensagem, que envia por si pelo WhatsApp ou pelo seu email. Tratamos os dados que nos envia (nome, contacto, morada do serviço e o que nos conta) para responder ao pedido, fazer o orçamento e, se o aceitar, prestar e faturar o serviço.</p>
+  <p>Este site não tem contas, não usa cookies e não guarda nada do que escreve: o formulário do pedido de orçamento só prepara a mensagem, que envia por si pelo WhatsApp ou pelo seu email. No seu aparelho fica apenas, enquanto a janela estiver aberta, a indicação de que já viu a intro da página inicial, para não a repetir (sessionStorage). Tratamos os dados que nos envia (nome, contacto, morada do serviço e o que nos conta) para responder ao pedido, fazer o orçamento e, se o aceitar, prestar e faturar o serviço.</p>
   <p>A base é o seu pedido e o contrato que daí resulte (RGPD, art. 6.º, n.º 1, alínea b)) e, na faturação, a obrigação legal (alínea c)).</p>
   <h2>Por quanto tempo</h2>
   <ul><li>${esc(prazos.pedidosDeContacto.texto)}</li><li>${esc(prazos.encomendas.texto.replace('Encomendas e facturas', 'Serviços prestados e faturas'))}</li></ul>
   <h2>Quem mais os vê</h2>
-  ${destinatariosHtml(config, { formato: 'lista' })}
-  ${frasesPrivacidade(config).map((f) => `<p>${esc(f)}</p>`).join('\n  ')}
+  ${destinatariosHtml(config, { formato: 'lista' })
+    // o email da NEVOA (MX da Dominios.pt, Faro): servidores em Portugal, conferido a 21 nov 2026
+    .replace('Dominios.pt (Dominios S.A.)</strong> (por indicar)', 'Dominios.pt (Dominios S.A.)</strong> (Portugal)')
+    .replace(/(Dominios\.pt[\s\S]*?)Por confirmar\./, '$1Sem transferência: os dados ficam na União Europeia.')}
+  ${frasesPrivacidade(config).map((f) => `<p>${esc(f.replace('Temos página no Facebook e/ou perfil no Instagram. As estatísticas dessas páginas', 'Temos perfil no Instagram. As estatísticas desse perfil'))}</p>`).join('\n  ')}
   <h2>Os seus direitos</h2>
   ${direitosHtml({ email: site.email })}
 </div>`;
-  return { caminho: '/privacidade/', titulo: 'Política de privacidade', descricao: 'Política de privacidade da NEVOA Premium Services: que dados tratamos quando nos contacta, para quê, por quanto tempo e os seus direitos.', seccao: 'legal', legal: true, corpo };
+  return { caminho: '/privacidade/', titulo: 'Política de privacidade', ortografia: true, descricao: 'Política de privacidade da NEVOA Premium Services: que dados tratamos quando nos contacta, para quê, por quanto tempo e os seus direitos.', seccao: 'legal', legal: true, corpo };
 }
 
 export function litigios(ctx) {
   const corpo = `${cabecalho({ rotuloTexto: 'Resolução de litígios', titulo: 'Resolução alternativa de litígios', frase: 'Se não chegarmos a acordo sobre um serviço, estas são as entidades a que pode recorrer.' })}
 <div class="contentor texto">
-  ${ralHtml({ ambito: 'local', concelhos: ['Felgueiras', 'Porto', 'Braga'] })}
+  ${ralHtml({ ambito: 'local', concelhos: ['Felgueiras', 'Porto', 'Braga'], textos: { supletivoLocal: 'para quem resida fora das áreas dos centros acima' } })
+    .replace('(Tribunal Arbitral de Consumo) (', '— Tribunal Arbitral de Consumo (')}
   <p>Pode também apresentar uma reclamação no <a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener">Livro de Reclamações Eletrónico</a>.</p>
 </div>`;
-  return { caminho: '/litigios/', titulo: 'Resolução de litígios', descricao: 'As entidades de resolução alternativa de litígios de consumo a que pode recorrer: TRIAVE, CICAP, CIAB e CNIACC, e o Livro de Reclamações Eletrónico.', seccao: 'legal', legal: true, corpo };
+  return { caminho: '/litigios/', titulo: 'Resolução de litígios', ortografia: true, descricao: 'As entidades de resolução alternativa de litígios de consumo a que pode recorrer: TRIAVE, CICAP, CIAB e CNIACC, e o Livro de Reclamações Eletrónico.', seccao: 'legal', legal: true, corpo };
 }
 
 export function naoEncontrada(ctx) {
