@@ -4,7 +4,8 @@
 Lê:
   media/fotos/*.jpg        as fotografias (cada uma tem de estar em content/fotos.json, com a descrição)
   media/videos/*.jpg       a imagem de espera (poster) de cada vídeo
-  media/marca/*.png        o logótipo deles, recortado do preto SEM redesenhar (_cliente/ferramentas/logotipo.py):
+  media/marca/*.png        o logótipo deles, recortado do preto SEM redesenhar (desde 21 nov 2026 dos ficheiros
+                           originais que o João mandou: _cliente/ferramentas/logotipo-original.py):
                            completo (empilhado), emblema (o N no anel), palavra (NEVOA), palavra-linha (NEVOA +
                            PREMIUM SERVICES); as «-escuro» são a mesma máscara no bronze dos destaques claros deles
   media/marca/perfil.jpg   a fotografia de perfil do Instagram (dourado sobre preto), para os ícones
@@ -44,7 +45,8 @@ ALTURAS_MARCA = {
     'palavra-linha-escuro': (40, 48, 60, 72, 80, 96, 120, 144, 160, 180, 211),
     'completo': (96, 120, 160, 192, 240, 288, 320, 360, 480, 556),
     'completo-escuro': (96, 120, 160, 192, 240, 288, 320, 360, 480, 556),
-    'emblema': (32, 40, 48, 64, 80, 96, 120, 144, 160, 240, 320),
+    # o emblema da capa vai até ~290 px de altura: 640 e 720 para os ecrãs de 2× e 3× (o original tem 1108 px)
+    'emblema': (32, 40, 48, 64, 80, 96, 120, 144, 160, 240, 320, 480, 640, 720),
     'emblema-escuro': (32, 40, 48, 64, 80, 96, 120, 144, 160, 240, 320),
 }
 

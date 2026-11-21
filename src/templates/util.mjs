@@ -130,6 +130,8 @@ export const icone = {
   haltere: T('<path d="M3.5 9.5v5M6.5 7v10M17.5 7v10M20.5 9.5v5M6.5 12h11"/>'),
   taca: T('<path d="M8 3.5h8l-.8 5.6a3.2 3.2 0 0 1-6.4 0Z"/><path d="M12 12.5v6M8.5 20.5h7M8.4 7h7.2"/>'),
   capacete: T('<path d="M4.5 16a7.5 7.5 0 0 1 15 0"/><path d="M2.5 16h19v3h-19z"/><path d="M10 9V6.5h4V9"/>'),
+  coworking: T('<circle cx="7.5" cy="7.3" r="2.2"/><circle cx="16.5" cy="7.3" r="2.2"/><path d="M3.8 14c.4-2.2 1.8-3.5 3.7-3.5s3.3 1.3 3.7 3.5M12.8 14c.4-2.2 1.8-3.5 3.7-3.5s3.3 1.3 3.7 3.5"/><path d="M2.5 14.5h19M5.5 14.5v6M18.5 14.5v6"/>'),
+  torre: T('<path d="M3.5 20.5h17"/><rect x="5" y="8" width="7" height="12.5" rx=".8"/><rect x="12" y="3.5" width="7" height="17" rx=".8"/><path d="M5 12h7M5 16h7M12 7.8h7M12 12h7M12 16.2h7"/>'),
   // porquê
   frasco: T('<path d="M8.5 10.5h6l1 2.5v7.5h-8V13Z"/><path d="M10 10.5V7h3.5v3.5M13.5 7h3.5l1.5-2M9.5 5h4.5"/>'),
   pessoas: T('<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M15.4 14.4a4.5 4.5 0 0 1 5.1 4.6"/>'),

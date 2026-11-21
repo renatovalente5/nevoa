@@ -61,5 +61,28 @@ for (const ini of ['index.html', 'propostas/b/index.html', 'propostas/c/index.ht
   prova(!/class="passos"|como funciona|do pedido à entrega/i.test(html), `${ini}: página inicial com secção de passos`);
   prova(html.includes('"@type":"LocalBusiness"'), `${ini}: dados estruturados do negócio`);
 }
+
+// o que o João (dono da NEVOA) pediu a 21 nov 2026
+const ler = (f) => (existsSync(join(SITE, f)) ? readFileSync(join(SITE, f), 'utf8') : '');
+const divisoes = JSON.parse(readFileSync(join(RAIZ, 'content', 'servicos.json'), 'utf8')).divisoes;
+const inicio = ler('index.html');
+for (const d of divisoes) {
+  prova(inicio.includes(`>${d.nome}</a></h3>`), `início: falta o cartão da ${d.nome}`);
+  prova(inicio.includes(`href="${base}${d.pagina}"`), `início: o cartão da ${d.nome} não leva a ${d.pagina}`);
+  prova(existsSync(join(SITE, d.pagina, 'index.html')), `${d.pagina}: a página da ${d.nome} não existe`);
+  prova(ler(d.pagina.slice(1) + 'index.html').includes(d.nome), `${d.pagina}: a página não diz «${d.nome}»`);
+  for (const p of paginas) prova(readFileSync(p, 'utf8').includes(`>${d.nome}</a></li>`), `${p.slice(SITE.length)}: o rodapé não tem a ${d.nome}`);
+}
+prova(/<p class="rotulo">Cleaning · Laundry · Express<\/p>/.test(inicio), 'início: o sobretítulo da capa não tem as divisões');
+const intro = inicio.match(/data-horizontal="([^"]+)" data-vertical="([^"]+)"/);
+prova(intro && existe(intro[1]) && existe(intro[2]), 'início: a intro não tem os dois vídeos');
+prova(!/data-intro/.test(ler('limpeza/index.html')), 'a intro só vai na página inicial');
+for (const f of ['limpeza/index.html', 'empresas/index.html']) prova(/Espaços de coworking/.test(ler(f)), `${f}: falta o coworking`);
+for (const f of ['limpeza/index.html', 'empresas/index.html', 'index.html']) prova(/Centros empresariais/.test(ler(f)) && /Unidades hoteleiras/.test(ler(f)), `${f}: faltam os centros empresariais ou a hotelaria`);
+prova(/Distrito de Braga/.test(ler('contactos/index.html')) && /qualquer parte do Norte/.test(ler('contactos/index.html')), 'contactos: a zona não tem o Norte e Braga');
+for (const p of paginas) prova(!/todo o distrito do Porto|distrito do Porto\.<\/p>|Felgueiras e distrito do Porto/.test(readFileSync(p, 'utf8')), `${p.slice(SITE.length)}: ainda diz só o distrito do Porto`);
+prova(/CIAB/.test(ler('litigios/index.html')), 'litígios: falta o CIAB (distrito de Braga)');
+prova(/em breve/i.test(ler('lavandaria/index.html')) && /Em breve/.test(inicio), 'a lavandaria deixou de dizer «Em breve»');
+prova(/name="servico" value="Recolhas e entregas"/.test(ler('contactos/index.html')), 'contactos: o pedido não tem as recolhas e entregas');
 console.log(`${paginas.length} páginas, ${ok} provas certas, ${falhas.length} falhas.`);
 if (falhas.length) { console.log(falhas.slice(0, 40).join('\n')); process.exit(1); }

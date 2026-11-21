@@ -145,7 +145,7 @@
 
   // ---------- entradas ao descer (só abaixo do primeiro ecrã; filas que deslizam entram inteiras) ----------
   if (!reduzir.matches && 'IntersectionObserver' in window) {
-    const ALVOS = '.seccao__cab, .servico-cartao, .espacos, .ad-bloco__texto, .ad, .casa__foto, .casa__texto, .cartao, .lista-check li, .passo, .dividido__media, .faixa, .contacto, .pedido, .peca, .rodape__grelha > *';
+    const ALVOS = '.seccao__cab, .servico-cartao, .espacos, .tabela-divisoes, .ad-bloco__texto, .ad, .casa__foto, .casa__texto, .cartao, .lista-check li, .passo, .dividido__media, .faixa, .contacto, .pedido, .peca, .rodape__grelha > *';
     const io = new IntersectionObserver((entradas) => {
       let n = 0;
       for (const e of entradas) {

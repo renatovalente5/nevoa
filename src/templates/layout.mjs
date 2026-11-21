@@ -8,12 +8,28 @@ export const VARIANTES = {
   c: { nome: 'Vidro', tema: 'claro', resumo: 'marfim, em mosaico, com o vidro embaciado que se limpa com o dedo' },
 };
 
-export const NAV = [
-  ['limpeza', '/limpeza/', 'Limpeza'],
+// O menu: as divisões do grupo pelo nome (Cleaning, Laundry, Express), as empresas e os contactos.
+const SECCAO_DA_DIVISAO = { cleaning: 'limpeza', laundry: 'lavandaria', express: 'express' };
+const nav = (ctx) => [
+  ...ctx.conteudo.divisoes.map((d) => [SECCAO_DA_DIVISAO[d.slug] || d.slug, d.pagina, d.curto]),
   ['empresas', '/empresas/', 'Empresas'],
-  ['lavandaria', '/lavandaria/', 'Lavandaria'],
   ['contactos', '/contactos/', 'Contactos'],
 ];
+
+// A intro (os vídeos do logótipo que a NEVOA mandou): só na página inicial, na primeira página de cada visita,
+// sem som, com «Saltar»; nunca com «reduzir movimento», poupança de dados ou um endereço com #.
+// No <head>: decide antes de pintar (sem a capa a aparecer e a desaparecer) e marca a visita em todas as páginas.
+const introCabeca = (comIntro) => `<script>(function(i){var h=document.documentElement;h.classList.add('js');try{var s=sessionStorage,v=s.getItem('nevoa-visita');s.setItem('nevoa-visita','1');if(i&&!v&&!location.hash&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!(navigator.connection&&navigator.connection.saveData))h.classList.add('com-intro')}catch(e){}})(${comIntro ? 1 : 0})</script>`;
+// No <body>: o vídeo ao alto no telemóvel, deitado no computador; acaba sozinho, com um clique, Esc ou a roda do rato;
+// se não começar a tocar em 3,5 s (rede lenta, poupança de energia do iPhone), entra-se logo no site.
+function introCorpo(ctx) {
+  const { assets } = ctx;
+  return `<div class="intro" data-intro data-horizontal="${ctx.asset('/assets/video/' + assets.intro.horizontal)}" data-vertical="${ctx.asset('/assets/video/' + assets.intro.vertical)}">
+  <video muted playsinline disablepictureinpicture preload="auto" aria-hidden="true"></video>
+  <button class="intro__saltar" type="button">Saltar</button>
+</div>
+<script>(function(){var h=document.documentElement,c=document.querySelector('[data-intro]');if(!h.classList.contains('com-intro')){c.remove();return}var v=c.querySelector('video'),feito=false,t;function fim(){if(feito)return;feito=true;clearTimeout(t);h.classList.add('intro-feita');c.classList.add('a-sair');setTimeout(function(){c.remove();h.classList.remove('com-intro','intro-feita')},750)}v.muted=true;v.src=matchMedia('(orientation: portrait)').matches?c.dataset.vertical:c.dataset.horizontal;t=setTimeout(fim,3500);v.addEventListener('playing',function(){clearTimeout(t);t=setTimeout(fim,((v.duration||5)+1)*1000)},{once:true});v.addEventListener('timeupdate',function(){if(v.duration&&v.currentTime>=v.duration-.7)fim()});v.addEventListener('ended',fim);v.addEventListener('error',fim);c.addEventListener('click',fim);addEventListener('keydown',function(e){if(e.key==='Escape')fim()});addEventListener('wheel',fim,{passive:true,once:true});var p=v.play();if(p&&p.catch)p.catch(fim)})()</script>`;
+}
 
 export function pagina(ctx, p) {
   const { site, assets, opcoes, variante } = ctx;
@@ -31,6 +47,8 @@ export function pagina(ctx, p) {
   const wa = whatsappHref(site.whatsapp, 'Olá! Gostava de pedir um orçamento à NEVOA.');
   const logo = escuro ? 'palavra' : 'palavra-escuro';
   const scripts = [assets.js, ...(p.scripts || []).map((s) => assets[s])];
+  const comIntro = Boolean(p.intro && assets.intro);
+  const NAV = nav(ctx);
 
   return `<!doctype html>
 <html lang="pt-PT" data-tema="${v.tema}" data-variante="${variante}">
@@ -38,7 +56,7 @@ export function pagina(ctx, p) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>@media (prefers-reduced-motion: no-preference){@view-transition{navigation:auto}}</style>
-<script>document.documentElement.classList.add('js')</script>
+${introCabeca(comIntro)}
 <title>${esc(titulo)}</title>
 <meta name="description" content="${esc(p.descricao || site.descricao)}">
 ${indexar ? '' : '<meta name="robots" content="noindex">\n'}<link rel="canonical" href="${canonical}">
@@ -63,7 +81,7 @@ ${scripts.map((s) => `<script src="${ctx.asset('/assets/' + s)}" defer></script>
 ${(p.jsonLd || []).map(jsonLd).join('\n')}
 </head>
 <body class="pagina-${p.seccao || 'outra'} v-${variante}${p.classe ? ' ' + p.classe : ''}">
-<a class="saltar" href="#conteudo">Saltar para o conteúdo</a>
+${comIntro ? introCorpo(ctx) + '\n' : ''}<a class="saltar" href="#conteudo">Saltar para o conteúdo</a>
 <header class="topo${p.topoSobreCapa ? ' topo--sobre-capa' : ''}" data-topo>
   <div class="topo__barra contentor">
     <a class="topo__marca" href="${ctx.href('/')}" aria-label="${esc(site.marca)}, página inicial">${marca(ctx, logo, 24, { classe: 'topo__logo' })}</a>
@@ -80,9 +98,8 @@ ${(p.jsonLd || []).map(jsonLd).join('\n')}
   <nav class="menu__nav contentor" aria-label="Menu">
     <ul class="menu__lista">
       <li><a href="${ctx.href('/')}"${p.seccao === 'inicio' ? ' aria-current="page"' : ''}>Início</a></li>
-      <li><a href="${ctx.href('/limpeza/')}"${atual('limpeza')}>Limpeza profissional</a></li>
+      ${ctx.conteudo.divisoes.map((d) => `<li><a href="${ctx.href(d.pagina)}"${atual(SECCAO_DA_DIVISAO[d.slug] || d.slug)}><span>${esc(d.nome)}</span><small class="menu__area">${esc(d.area)}</small></a></li>`).join('\n      ')}
       <li><a href="${ctx.href('/empresas/')}"${atual('empresas')}>Limpeza para empresas</a></li>
-      <li><a href="${ctx.href('/lavandaria/')}"${atual('lavandaria')}>Lavandaria &amp; Engomadoria</a></li>
       <li><a href="${ctx.href('/a-nevoa/')}"${atual('sobre')}>A NEVOA</a></li>
       <li><a href="${ctx.href('/contactos/')}"${atual('contactos')}>Contactos</a></li>
     </ul>
@@ -119,14 +136,12 @@ function rodape(ctx) {
         <a href="mailto:${site.email}" class="redonda">${icone.email}<span class="sr">Email</span></a>
       </p>
     </div>
-    <nav class="rodape__coluna" aria-label="Serviços">
-      <h2 class="rodape__titulo">Serviços</h2>
+    <nav class="rodape__coluna" aria-label="Divisões">
+      <h2 class="rodape__titulo">Divisões</h2>
       <ul>
-        <li><a href="${ctx.href('/limpeza/')}">Limpeza profissional</a></li>
+        ${ctx.conteudo.divisoes.map((d) => `<li><a href="${ctx.href(d.pagina)}">${esc(d.nome)}</a></li>`).join('\n        ')}
         <li><a href="${ctx.href('/empresas/')}">Limpeza para empresas</a></li>
         <li><a href="${ctx.href('/limpeza/')}#pos-obra">Limpeza pós-obra</a></li>
-        <li><a href="${ctx.href('/lavandaria/')}">Lavandaria &amp; Engomadoria</a></li>
-        <li><a href="${ctx.href('/lavandaria/')}#recolha">Recolha e entrega</a></li>
       </ul>
     </nav>
     <nav class="rodape__coluna" aria-label="A NEVOA">

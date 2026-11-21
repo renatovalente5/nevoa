@@ -3,9 +3,11 @@
 //
 //   node scripts/build.mjs                       pré-visualização local (base /, noindex)
 //   node scripts/build.mjs --base=/nevoa --url=https://renatovalente5.github.io/nevoa
-//   node scripts/build.mjs --producao --url=https://nevoaservices.pt   (indexável, com sitemap)
+//   node scripts/build.mjs --producao --url=https://nevoagroup.pt   (indexável, com sitemap; o domínio do grupo)
 //
 // A proposta escolhida (content/site.json → "variante"; o Renato escolheu a A «Névoa» a 19 nov 2026) é o site.
+// O grupo (21 nov 2026, o João, dono da NEVOA): as divisões estão em content/servicos.json → divisoes; a intro são os
+// vídeos do logótipo dele (media/intro/), só na página inicial.
 // Só com --propostas (localmente, para comparar) as outras duas ficam inteiras em /propostas/<letra>/ e todas as
 // páginas levam a barra para trocar.
 //
@@ -49,6 +51,14 @@ for (const [n, f] of Object.entries(fotos)) {
 }
 for (const p of conteudo.antesDepois) for (const lado of ['antes', 'depois']) if (!fotos[`posobra-${p.slug}-${lado}`]) erros.push(`antes e depois «${p.slug}»: falta a fotografia ${lado}`);
 for (const v of ['vidros', 'equipa']) if (!manifesto.videos[v]) erros.push(`vídeo ${v}: não está no manifesto`);
+for (const d of conteudo.divisoes) {
+  if (!d.nome || !d.curto || !d.area || !/^\/[a-z-]+\/$/.test(d.pagina || '')) erros.push(`divisão ${d.slug}: falta o nome, o curto, a área ou a página`);
+  if (!['ativo', 'em-breve'].includes(d.estado)) erros.push(`divisão ${d.slug}: estado «${d.estado}» (ativo ou em-breve)`);
+  if (d.foto && !fotos[d.foto]) erros.push(`divisão ${d.slug}: a fotografia ${d.foto} não existe`);
+  if (d.video && !manifesto.videos[d.video]) erros.push(`divisão ${d.slug}: o vídeo ${d.video} não existe`);
+}
+for (const e of conteudo.espacos) if (!['limpeza', 'empresas'].includes(e.pagina)) erros.push(`espaço ${e.slug}: página «${e.pagina}»`);
+for (const f of ['horizontal', 'vertical']) if (!existsSync(join(RAIZ, 'media', 'intro', f + '.mp4'))) erros.push(`intro: falta media/intro/${f}.mp4`);
 if (!/^\d{3} \d{3} \d{3}$/.test(site.telefone)) erros.push(`site.json: telefone «${site.telefone}» (formato 9xx xxx xxx)`);
 if (erros.length) { console.error('O conteúdo tem problemas:\n- ' + erros.join('\n- ')); process.exit(1); }
 
@@ -79,6 +89,14 @@ escreverAsset('site', readFileSync(join(RAIZ, 'src', 'scripts', 'site.js'), 'utf
 const variantes = opcoes.propostas ? [site.variante, ...Object.keys(VARIANTES).filter((k) => k !== site.variante)] : [site.variante];
 if (variantes.includes('a')) escreverAsset('nevoa', readFileSync(join(RAIZ, 'src', 'scripts', 'nevoa.js'), 'utf8'), 'js');
 if (variantes.includes('c')) escreverAsset('vidro', readFileSync(join(RAIZ, 'src', 'scripts', 'vidro.js'), 'utf8'), 'js');
+// a intro: os dois vídeos do logótipo (deitado para o computador, ao alto para o telemóvel), com resumo no nome
+assets.intro = {};
+for (const f of ['horizontal', 'vertical']) {
+  const buf = readFileSync(join(RAIZ, 'media', 'intro', f + '.mp4'));
+  const nome = `intro-${f}-${resumo(buf)}.mp4`;
+  writeFileSync(join(opcoes.saida, 'assets', 'video', nome), buf);
+  assets.intro[f] = nome;
+}
 
 // ---- páginas, por proposta ----
 const usados = new Set();
@@ -94,7 +112,7 @@ for (const variante of variantes) {
   const ctx = criarContexto({ base: opcoes.base, raiz: opcoes.base + prefixo, url: opcoes.url, manifesto, fotos, usados });
   Object.assign(ctx, { site, conteudo, opcoes, assets, variante });
   ctx.partilhaMarca = partilhaMarca(ctx);
-  const paginas = [P.inicio(ctx), P.limpeza(ctx), P.empresas(ctx), P.lavandaria(ctx), P.sobre(ctx), P.contactos(ctx), P.privacidade(ctx), P.litigios(ctx)];
+  const paginas = [P.inicio(ctx), P.limpeza(ctx), P.empresas(ctx), P.lavandaria(ctx), P.express(ctx), P.sobre(ctx), P.contactos(ctx), P.privacidade(ctx), P.litigios(ctx)];
   if (!prefixo) paginas.push(P.naoEncontrada(ctx));
   for (const p of paginas) {
     escrever(prefixo + p.caminho, pagina(ctx, p));

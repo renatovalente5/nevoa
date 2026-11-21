@@ -1,25 +1,35 @@
 {
+  "divisoes": [
+    { "slug": "cleaning", "nome": "NEVOA Cleaning", "curto": "Cleaning", "area": "Limpezas profissionais", "pagina": "/limpeza/", "estado": "ativo", "video": "vidros", "rotulo": "A equipa da NEVOA a limpar uma janela ao pôr do sol", "foco": 30 },
+    { "slug": "laundry", "nome": "NEVOA Laundry", "curto": "Laundry", "area": "Lavandaria e engomadoria", "pagina": "/lavandaria/", "estado": "em-breve", "foto": "loja-letreiro" },
+    { "slug": "express", "nome": "NEVOA Express", "curto": "Express", "area": "Recolhas e entregas", "pagina": "/recolhas-e-entregas/", "estado": "em-breve", "foto": "marca-recolha" }
+  ],
   "espacos": [
     { "slug": "casas", "nome": "Casas", "icone": "casa", "linha": "Ambientes limpos e acolhedores, cuidados como se fossem nossos.", "pagina": "limpeza" },
     { "slug": "escritorios", "nome": "Empresas e escritórios", "icone": "escritorio", "linha": "Espaços de trabalho mais limpos e mais produtivos.", "pagina": "empresas" },
     { "slug": "industria", "nome": "Indústria e armazéns", "icone": "fabrica", "linha": "Espaços seguros, limpos e em conformidade.", "pagina": "empresas" },
-    { "slug": "condominios", "nome": "Condomínios", "icone": "predio", "linha": "Escadas, entradas e zonas comuns sempre impecáveis.", "pagina": "limpeza" },
-    { "slug": "alojamento-local", "nome": "Alojamento local", "icone": "chave", "linha": "Preparação e limpeza entre estadias, para hóspedes que reparam.", "pagina": "limpeza" },
+    { "slug": "coworking", "nome": "Espaços de coworking", "icone": "coworking", "linha": "Secretárias, salas e áreas comuns prontas para cada dia de trabalho.", "pagina": "empresas" },
+    { "slug": "centros-empresariais", "nome": "Centros empresariais", "icone": "torre", "linha": "Entradas, corredores e zonas comuns sempre à altura de quem lá trabalha.", "pagina": "empresas" },
     { "slug": "comercio", "nome": "Lojas e comércio", "icone": "loja", "linha": "Uma montra limpa é a melhor receção aos seus clientes.", "pagina": "empresas" },
     { "slug": "clinicas", "nome": "Clínicas e consultórios", "icone": "cruz", "linha": "Higiene cuidada onde ela mais conta.", "pagina": "empresas" },
     { "slug": "ginasios", "nome": "Ginásios", "icone": "haltere", "linha": "Balneários, salas e áreas de treino sempre limpos.", "pagina": "empresas" },
+    { "slug": "condominios", "nome": "Condomínios", "icone": "predio", "linha": "Escadas, entradas e zonas comuns sempre impecáveis.", "pagina": "limpeza" },
+    { "slug": "hotelaria", "nome": "Unidades hoteleiras", "icone": "hotel", "linha": "Quartos, receção e áreas comuns impecáveis, hóspede após hóspede.", "pagina": "empresas" },
+    { "slug": "alojamento-local", "nome": "Alojamento local", "icone": "chave", "linha": "Preparação e limpeza entre estadias, para hóspedes que reparam.", "pagina": "limpeza" },
     { "slug": "eventos", "nome": "Eventos", "icone": "taca", "linha": "Antes, durante e depois: nós tratamos da limpeza.", "pagina": "limpeza" },
     { "slug": "pos-obra", "nome": "Pós-obra", "icone": "capacete", "linha": "Tiramos o pó e os resíduos da obra e entregamos o espaço pronto a usar.", "pagina": "limpeza" }
   ],
   "tiposLimpeza": [
     { "nome": "Limpeza regular", "linha": "Manutenção semanal ou à medida, para o espaço estar sempre pronto." },
     { "nome": "Limpeza profunda", "linha": "Cuidado extra onde mais importa, de cima a baixo." },
-    { "nome": "Pós-obra", "linha": "Remoção de poeiras e resíduos e limpeza final de todas as superfícies." },
-    { "nome": "Vidros e caixilharias", "linha": "Vidros, caixilhos e acabamentos sem marcas." },
+    { "nome": "Limpeza pós-obras", "linha": "Remoção de poeiras e resíduos e limpeza final de todas as superfícies." },
+    { "nome": "Vidros e superfícies envidraçadas", "linha": "Vidros, montras e caixilharias sem marcas." },
+    { "nome": "Higienização de espaços", "linha": "Para quem precisa de um espaço tratado ao pormenor." },
     { "nome": "Cozinhas e casas de banho", "linha": "Higiene em primeiro lugar, nos sítios que mais a pedem." },
     { "nome": "Zonas comuns", "linha": "Escadas, entradas, copas e espaços partilhados." },
-    { "nome": "Higienização de espaços", "linha": "Para quem precisa de um espaço tratado ao pormenor." }
+    { "nome": "Serviços especializados", "linha": "E o que mais o seu espaço pedir: diga-nos do que precisa." }
   ],
+  "compromisso": "Qualidade, profissionalismo, rigor e flexibilidade, com um acompanhamento próximo e soluções ajustadas a cada espaço.",
   "porque": [
     { "icone": "frasco", "nome": "Produtos profissionais", "linha": "Resultados melhores e espaços mais saudáveis." },
     { "icone": "pessoas", "nome": "Equipa de confiança", "linha": "Profissionais com formação, discretos e cuidadosos." },
@@ -51,6 +61,12 @@
     { "nome": "Secamos", "linha": "Com todo o cuidado e no tempo certo." },
     { "nome": "Engomamos", "linha": "Acabamento profissional, pronto a usar." },
     { "nome": "Entregamos", "linha": "Levantamento na loja, ou entrega em sua casa." }
+  ],
+  "passosExpress": [
+    { "nome": "Agende", "linha": "Escolha o dia e a hora mais convenientes." },
+    { "nome": "Recolhemos", "linha": "Vamos até si, a casa ou à empresa." },
+    { "nome": "Cuidamos", "linha": "Lavagem, secagem e engomadoria com a máxima atenção." },
+    { "nome": "Entregamos", "linha": "No seu domicílio, pronto a usar." }
   ],
   "antesDepois": [
     { "slug": "cozinha", "nome": "Cozinha" },

@@ -1,8 +1,8 @@
 {
   "marca": "NEVOA Premium Services",
   "marcaCurta": "NEVOA",
-  "titulo": "NEVOA Premium Services — limpeza profissional e lavandaria em Felgueiras",
-  "descricao": "Limpeza profissional para casas, empresas, condomínios, alojamento local e pós-obra, e lavandaria e engomadoria com recolha e entrega. Em Felgueiras e em todo o distrito do Porto.",
+  "titulo": "NEVOA Premium Services — limpezas em Felgueiras e no Norte",
+  "descricao": "Limpezas profissionais para casas, empresas, coworkings, condomínios e hotelaria, com sede em Felgueiras e em todo o Norte. Em breve, lavandaria e recolhas e entregas.",
   "lema": "Onde cada detalhe conta.",
   "frase": "Somos premium por escolha, e não por preço.",
   "telefone": "910 079 994",
@@ -20,9 +20,10 @@
   "horario": { "texto": "Segunda a sábado, das 8h às 20h", "curto": "Seg. a sáb., 8h–20h", "schema": "Mo-Sa 08:00-20:00" },
   "desde": "2026-10-01",
   "zona": {
-    "resumo": "Felgueiras e todo o distrito do Porto",
-    "curto": "Felgueiras e distrito do Porto",
-    "concelhos": ["Felgueiras", "Lousada", "Paços de Ferreira", "Penafiel", "Paredes", "Valongo", "Gondomar", "Porto", "Matosinhos", "Maia", "Santo Tirso", "Vila do Conde", "Póvoa de Varzim"]
+    "resumo": "Sede em Felgueiras, em todo o Norte",
+    "curto": "Felgueiras e todo o Norte",
+    "frase": "A sede é em Felgueiras, mas trabalhamos em qualquer parte do Norte: no distrito do Porto, no distrito de Braga e não só.",
+    "regioes": ["Distrito do Porto", "Distrito de Braga", "Todo o Norte"]
   },
   "empresa": { "firma": null, "nif": null },
   "variante": "a"

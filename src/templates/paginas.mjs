@@ -9,8 +9,13 @@ const PEDIDOS = {
   al: 'Alojamento local',
   condominio: 'Condomínio',
   lavandaria: 'Lavandaria e engomadoria',
+  express: 'Recolhas e entregas',
   outro: 'Outro',
 };
+
+// «Três divisões» com o número por extenso (o grupo vai ganhar divisões: o texto acompanha a lista)
+const POR_EXTENSO = { 2: 'Duas', 3: 'Três', 4: 'Quatro', 5: 'Cinco', 6: 'Seis', 7: 'Sete', 8: 'Oito' };
+const nDivisoes = (ctx) => POR_EXTENSO[ctx.conteudo.divisoes.length] || String(ctx.conteudo.divisoes.length);
 
 const migalhas = (ctx, itens) => ({
   '@context': 'https://schema.org',
@@ -25,7 +30,7 @@ const negocio = (ctx) => {
     '@type': 'LocalBusiness',
     '@id': ctx.absPagina('/') + '#negocio',
     name: site.marca,
-    alternateName: ['NEVOA', 'Névoa Premium Services', 'NEVOA Premium Services', 'Nevoa Services'],
+    alternateName: ['NEVOA', 'Névoa Premium Services', 'NEVOA Premium Services', 'Nevoa Services', 'NEVOA Group'],
     slogan: site.lema,
     description: site.descricao,
     url: ctx.absPagina('/'),
@@ -34,10 +39,11 @@ const negocio = (ctx) => {
     telephone: '+351' + site.telefone.replace(/\s/g, ''),
     email: site.email,
     address: { '@type': 'PostalAddress', streetAddress: site.morada.rua, postalCode: site.morada.codigoPostal, addressLocality: site.morada.localidade, addressRegion: site.morada.distrito, addressCountry: 'PT' },
-    areaServed: site.zona.concelhos.map((c) => ({ '@type': 'City', name: c })),
+    areaServed: site.zona.regioes.map((r) => ({ '@type': 'AdministrativeArea', name: r === 'Todo o Norte' ? 'Região Norte, Portugal' : r })),
     openingHours: site.horario.schema,
     sameAs: [`https://www.instagram.com/${site.instagram}/`],
-    knowsAbout: ['Limpeza profissional', 'Limpeza de casas', 'Limpeza de escritórios', 'Limpeza pós-obra', 'Limpeza de condomínios', 'Limpeza de alojamento local', 'Lavandaria', 'Engomadoria', 'Recolha e entrega de roupa'],
+    department: ctx.conteudo.divisoes.map((d) => ({ '@type': 'Organization', name: d.nome, description: d.area, url: ctx.absPagina(d.pagina) })),
+    knowsAbout: ['Limpeza profissional', 'Limpeza de casas', 'Limpeza de escritórios', 'Limpeza de espaços de coworking', 'Limpeza de centros empresariais', 'Limpeza de unidades hoteleiras', 'Limpeza pós-obras', 'Limpeza de condomínios', 'Limpeza de alojamento local', 'Lavandaria', 'Engomadoria', 'Recolhas e entregas'],
   };
 };
 
@@ -82,28 +88,32 @@ function confianca(ctx) {
   </ul>`;
 }
 
-// Os dois serviços: a limpeza (vídeo real dos vidros) e a lavandaria (o letreiro da loja), cartões inteiros que levam à página.
-function cartoesServicos(ctx, { sizes = '(min-width: 900px) 560px, 92vw' } = {}) {
-  return `<div class="servicos-2">
-  <article class="servico-cartao">
-    <div class="servico-cartao__media">${video(ctx, 'vidros', { rotulo: 'A equipa da NEVOA a limpar uma janela ao pôr do sol', foco: 30 })}</div>
+// As divisões do grupo (content/servicos.json → divisoes: o nome, a área de negócio, a página e o estado), em cartões
+// inteiros que levam à página. Uma divisão nova é uma entrada nova na lista (e a página dela).
+function cartoesDivisoes(ctx, { sizes = '(min-width: 900px) 380px, 86vw' } = {}) {
+  return `<div class="divisoes">
+  ${ctx.conteudo.divisoes.map((d) => `<article class="servico-cartao">
+    <div class="servico-cartao__media">${d.video ? video(ctx, d.video, { rotulo: d.rotulo, foco: d.foco }) : foto(ctx, d.foto, { sizes, classe: 'servico-cartao__foto' })}</div>
     <div class="servico-cartao__corpo">
-      ${estadoEtiqueta('ativo')}
-      <h3><a href="${ctx.href('/limpeza/')}" class="servico-cartao__ligacao">Limpeza profissional</a></h3>
-      <p>Regular, profunda ou pós-obra, com produtos profissionais.</p>
+      ${estadoEtiqueta(d.estado)}
+      <h3><a href="${ctx.href(d.pagina)}" class="servico-cartao__ligacao">${esc(d.nome)}</a></h3>
+      <p>${esc(d.area)}</p>
       <span class="seta-circulo" aria-hidden="true">${icone.seta}</span>
     </div>
-  </article>
-  <article class="servico-cartao">
-    <div class="servico-cartao__media">${foto(ctx, 'loja-letreiro', { sizes, classe: 'servico-cartao__foto' })}</div>
-    <div class="servico-cartao__corpo">
-      ${estadoEtiqueta('em-breve')}
-      <h3><a href="${ctx.href('/lavandaria/')}" class="servico-cartao__ligacao">Lavandaria &amp; Engomadoria</a></h3>
-      <p>Lavar, secar e engomar, com recolha e entrega ao domicílio.</p>
-      <span class="seta-circulo" aria-hidden="true">${icone.seta}</span>
-    </div>
-  </article>
+  </article>`).join('\n  ')}
 </div>`;
+}
+
+// A tabela do grupo, como o João a escreveu: Divisão · Área de negócio (e o estado), cada linha leva à página.
+function tabelaDivisoes(ctx) {
+  return `<ul class="tabela-divisoes" role="list">
+  ${ctx.conteudo.divisoes.map((d) => `<li><a href="${ctx.href(d.pagina)}">
+    <span class="tabela-divisoes__nome">${esc(d.nome)}</span>
+    <span class="tabela-divisoes__area">${esc(d.area)}</span>
+    ${estadoEtiqueta(d.estado)}
+    <span class="seta-circulo" aria-hidden="true">${icone.seta}</span>
+  </a></li>`).join('\n  ')}
+</ul>`;
 }
 
 function filaEspacos(ctx, { comLinha = false } = {}) {
@@ -158,31 +168,36 @@ export function inicio(ctx) {
     seccao: 'inicio',
     classe: 'inicio',
     topoSobreCapa: v === 'a',
+    intro: v === 'a',
     scripts: v === 'a' ? ['nevoa'] : v === 'c' ? ['vidro'] : [],
     precarregar,
     corpo,
     jsonLd: [
-      { '@context': 'https://schema.org', '@type': 'WebSite', name: ctx.site.marca, alternateName: ['NEVOA', 'Névoa Premium Services'], url: ctx.absPagina('/') },
+      { '@context': 'https://schema.org', '@type': 'WebSite', name: ctx.site.marca, alternateName: ['NEVOA', 'Névoa Premium Services', 'NEVOA Group'], url: ctx.absPagina('/') },
       negocio(ctx),
     ],
   };
 }
 
+// O sobretítulo e a frase da capa: as divisões do grupo e o que já está a funcionar.
+const rotuloCapa = (ctx) => ctx.conteudo.divisoes.map((d) => esc(d.curto)).join(' · ');
+const FRASE_CAPA = 'Limpezas profissionais para casas e empresas. Em breve, também lavandaria e engomadoria, com recolhas e entregas ao domicílio.';
+
 // A «Névoa»: preto e dourado, a névoa dourada a mexer devagar atrás do título (WebGL, parada com movimento reduzido).
 function inicioA(ctx) {
   return `<section class="capa capa--nevoa" aria-labelledby="t-capa">
   <canvas class="capa__nevoa" aria-hidden="true" data-nevoa></canvas>
-  <div class="capa__emblema" aria-hidden="true">${marca(ctx, 'emblema', 240)}</div>
+  <div class="capa__emblema" aria-hidden="true">${marca(ctx, 'emblema', 290)}</div>
   <div class="capa__veu" aria-hidden="true"></div>
   <div class="contentor capa__texto">
-    ${rotulo('Limpeza &amp; Lavandaria · Felgueiras')}
+    ${rotulo(rotuloCapa(ctx))}
     <h1 class="capa__titulo" id="t-capa">Onde cada <span class="dourado">detalhe</span> conta.</h1>
-    <p class="capa__frase">Limpeza profissional para casas e empresas. Lavandaria e engomadoria, com recolha e entrega ao domicílio.</p>
+    <p class="capa__frase">${FRASE_CAPA}</p>
     <div class="capa__botoes">${botaoPedido(ctx)}<a class="botao botao--linha" href="#servicos">Ver os serviços</a></div>
     ${confianca(ctx)}
   </div>
 </section>
-${seccao({ id: 'servicos', rot: 'Dois serviços', titulo: 'Uma só NEVOA', corpo: cartoesServicos(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
+${seccao({ id: 'servicos', rot: 'As nossas divisões', titulo: 'Uma só NEVOA', corpo: cartoesDivisoes(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
 ${seccao({ id: 'antes-e-depois', classe: 'seccao--ad', corpo: `<div class="ad-bloco">
   <div class="ad-bloco__texto">
     ${rotulo('Antes e depois')}
@@ -200,9 +215,9 @@ function inicioB(ctx) {
   return `<section class="capa capa--seda" aria-labelledby="t-capa">
   <div class="contentor capa__grelha">
     <div class="capa__texto">
-      ${rotulo('Limpeza &amp; Lavandaria · Felgueiras')}
+      ${rotulo(rotuloCapa(ctx))}
       <h1 class="capa__titulo" id="t-capa">Onde cada <span class="dourado">detalhe</span> conta.</h1>
-      <p class="capa__frase">Limpeza profissional para casas e empresas. Lavandaria e engomadoria, com recolha e entrega ao domicílio.</p>
+      <p class="capa__frase">${FRASE_CAPA}</p>
       <div class="capa__botoes">${botaoPedido(ctx)}${botaoWhatsapp(ctx)}</div>
       ${confianca(ctx)}
     </div>
@@ -212,7 +227,7 @@ function inicioB(ctx) {
     </div>
   </div>
 </section>
-${seccao({ id: 'servicos', rot: 'Dois serviços', titulo: 'Uma só NEVOA', corpo: cartoesServicos(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
+${seccao({ id: 'servicos', rot: 'As nossas divisões', titulo: 'Uma só NEVOA', corpo: cartoesDivisoes(ctx) + `<div class="servicos__espacos" id="espacos"><h3 class="servicos__espacos-titulo">Para cada espaço</h3>${filaEspacos(ctx)}</div>` })}
 ${seccao({ id: 'antes-e-depois', classe: 'seccao--ad', corpo: `<div class="ad-bloco">
   <div class="ad-bloco__texto">
     ${rotulo('Antes e depois')}
@@ -283,16 +298,19 @@ function inicioC(ctx) {
 
 // ---------- serviços ----------
 
+const divisao = (ctx, slug) => ctx.conteudo.divisoes.find((d) => d.slug === slug);
+const rotuloDivisao = (ctx, slug, extra) => { const d = divisao(ctx, slug); return `${esc(d.nome)} · ${extra ? esc(extra) : esc(d.area)}`; };
+
 export function limpeza(ctx) {
   const c = ctx.conteudo;
   const corpo = `${cabecalho({
-    rotuloTexto: 'Limpeza profissional',
+    rotuloTexto: rotuloDivisao(ctx, 'cleaning'),
     titulo: 'Espaços limpos. <span class="dourado">Vidas mais leves.</span>',
     estado: estadoEtiqueta('ativo'),
-    frase: 'Para casas, empresas, condomínios, alojamento local e obras acabadas. Limpeza regular ou a fundo, com produtos profissionais e atenção a cada pormenor.',
+    frase: 'Serviços profissionais de limpeza, com soluções personalizadas e adaptadas às necessidades de cada cliente. Para casas e empresas, em todo o Norte.',
     acoes: `${botaoPedido(ctx, 'casa')}${botaoWhatsapp(ctx)}`,
   })}
-${seccao({ id: 'espacos', rot: 'Para cada espaço', titulo: 'Uma solução para cada espaço', corpo: `<ul class="grelha-cartoes grelha-cartoes--5" role="list">
+${seccao({ id: 'espacos', rot: 'Onde atuamos', titulo: 'Uma solução para cada espaço', corpo: `<ul class="grelha-cartoes grelha-cartoes--5" role="list">
   ${c.espacos.map((e) => `<li class="cartao" id="${e.slug}">
     <span class="circulo-icone">${icone[e.icone]}</span>
     <h3>${esc(e.nome)}</h3>
@@ -315,15 +333,15 @@ ${seccao({ id: 'pos-obra', classe: 'seccao--ad', corpo: `<div class="ad-bloco ad
   </div>
   ${antesDepois(ctx, { pares: c.antesDepois, id: 'adl', sizes: '(min-width: 900px) 320px, 46vw' })}
 </div>` })}
-${seccao({ id: 'porque', rot: 'Porquê a NEVOA', titulo: 'Mais do que limpeza. Confiança.', corpo: porque(ctx) })}`;
+${seccao({ id: 'porque', rot: 'Porquê a NEVOA', titulo: 'Mais do que limpeza. Confiança.', sub: esc(c.compromisso), corpo: porque(ctx) })}`;
   return {
     caminho: '/limpeza/',
-    titulo: 'Limpeza profissional em Felgueiras e no distrito do Porto',
-    ogTitulo: 'Limpeza profissional — NEVOA Premium Services',
-    descricao: 'Limpeza de casas, condomínios, alojamento local, eventos e pós-obra em Felgueiras e em todo o distrito do Porto. Limpeza regular ou a fundo, com produtos profissionais. Orçamento sem compromisso.',
+    titulo: 'Limpezas profissionais em Felgueiras e no Norte',
+    ogTitulo: 'NEVOA Cleaning — limpezas profissionais',
+    descricao: 'Limpeza regular, profunda e pós-obras para casas, empresas, coworkings, condomínios e hotelaria, em Felgueiras e em todo o Norte. Orçamento sem compromisso.',
     seccao: 'limpeza',
     corpo,
-    jsonLd: [migalhas(ctx, [['Limpeza profissional', '/limpeza/']])],
+    jsonLd: [migalhas(ctx, [['NEVOA Cleaning', '/limpeza/']])],
   };
 }
 
@@ -337,14 +355,13 @@ export function empresas(ctx) {
   const c = ctx.conteudo;
   const deEmpresa = c.espacos.filter((e) => e.pagina === 'empresas' || ['condominios', 'alojamento-local'].includes(e.slug));
   const corpo = `${cabecalho({
-    rotuloTexto: 'Limpeza para empresas',
+    rotuloTexto: rotuloDivisao(ctx, 'cleaning', 'Empresas'),
     titulo: 'O seu negócio merece um <span class="dourado">espaço à altura.</span>',
-    frase: 'Escritórios, indústria, comércio, clínicas, ginásios e condomínios. Um parceiro de limpeza com um plano feito para a sua operação, com qualidade, confiança e discrição.',
-    acoes: `${botaoPedido(ctx, 'empresa', 'Pedir uma proposta')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de pedir uma proposta de limpeza para a minha empresa.')}`,
+    frase: 'Um parceiro de limpeza com um plano feito para a sua operação: qualidade, profissionalismo, rigor e flexibilidade, com um acompanhamento próximo.',
+    acoes: `${botaoPedido(ctx, 'empresa', 'Agendar uma reunião ou visita')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de agendar uma reunião ou uma visita para a limpeza da minha empresa.')}`,
   })}
-${seccao({ id: 'espacos', rot: 'Onde trabalhamos', titulo: 'Soluções para todo o tipo de empresa', corpo: `<ul class="grelha-cartoes" role="list">
+${seccao({ id: 'espacos', rot: 'Onde atuamos', titulo: 'Soluções para todo o tipo de empresa', corpo: `<ul class="grelha-cartoes grelha-cartoes--5" role="list">
   ${deEmpresa.map((e) => `<li class="cartao" id="${e.slug}"><span class="circulo-icone">${icone[e.icone]}</span><h3>${esc(e.nome)}</h3><p>${esc(e.linha)}</p></li>`).join('\n  ')}
-  <li class="cartao" id="espacos-partilhados"><span class="circulo-icone">${icone.pessoas}</span><h3>Espaços partilhados</h3><p>Casas de banho, copas, salas e áreas comuns.</p></li>
 </ul>` })}
 ${seccao({ id: 'como-trabalhamos', rot: 'Como trabalhamos', titulo: 'Da avaliação ao acompanhamento', corpo: `<div class="dividido dividido--inverso">
   <ol class="passos" role="list">
@@ -355,19 +372,19 @@ ${seccao({ id: 'como-trabalhamos', rot: 'Como trabalhamos', titulo: 'Da avaliaç
 ${seccao({ id: 'porque', rot: 'Porquê a NEVOA', titulo: 'Mais do que limpeza, um parceiro', corpo: porque(ctx) })}`;
   return {
     caminho: '/empresas/',
-    titulo: 'Limpeza para empresas, escritórios e indústria',
-    ogTitulo: 'Limpeza para empresas — NEVOA Premium Services',
-    descricao: 'Limpeza profissional de escritórios, indústria e armazéns, lojas, clínicas, ginásios e condomínios em Felgueiras e no distrito do Porto. Plano à medida e horários adaptados. Peça uma proposta.',
+    titulo: 'Limpeza para empresas, escritórios, coworkings e indústria',
+    ogTitulo: 'NEVOA Cleaning — limpeza para empresas',
+    descricao: 'Limpeza de escritórios, coworkings, centros empresariais, indústria, comércio, clínicas, ginásios, condomínios e hotelaria, em todo o Norte. Agende uma reunião ou visita.',
     seccao: 'empresas',
     corpo,
-    jsonLd: [migalhas(ctx, [['Limpeza para empresas', '/empresas/']])],
+    jsonLd: [migalhas(ctx, [['NEVOA Cleaning', '/limpeza/'], ['Empresas', '/empresas/']])],
   };
 }
 
 export function lavandaria(ctx) {
   const c = ctx.conteudo;
   const corpo = `${cabecalho({
-    rotuloTexto: 'Lavandaria &amp; Engomadoria',
+    rotuloTexto: rotuloDivisao(ctx, 'laundry'),
     titulo: 'Cuidamos das suas peças. <span class="dourado">Cuidamos do seu tempo.</span>',
     estado: '<span class="etiqueta etiqueta--breve">Abertura em breve, em Felgueiras</span>',
     frase: 'Lavar, secar e engomar, com recolha e entrega ao domicílio. Para particulares e empresas, na nossa nova loja de Felgueiras.',
@@ -385,21 +402,50 @@ ${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Simples, cómodo 
 ${seccao({ id: 'recolha', classe: 'seccao--recolha', corpo: `<div class="faixa">
   <span class="circulo-icone circulo-icone--grande">${icone.carrinha}</span>
   <div class="faixa__texto">
-    ${rotulo('Recolha &amp; Entrega')}
+    ${rotulo(esc(divisao(ctx, 'express').nome))}
     <h2 class="titulo-seccao" id="t-recolha">Nós vamos até si.</h2>
-    <p>Escolha o dia e a hora. Recolhemos a roupa em sua casa ou na sua empresa, em Felgueiras e na região, tratamos de tudo e devolvemo-la pronta a usar.</p>
+    <p>Escolha o dia e a hora. Recolhemos a roupa em sua casa ou na sua empresa, tratamos de tudo e devolvemo-la pronta a usar.</p>
   </div>
-  ${botaoPedido(ctx, 'lavandaria', 'Quero saber quando abre', 'botao botao--ouro')}
+  <a class="botao botao--ouro" href="${ctx.href(divisao(ctx, 'express').pagina)}">Conhecer a ${esc(divisao(ctx, 'express').nome)}</a>
 </div>` })}`;
   return {
     caminho: '/lavandaria/',
-    titulo: 'Lavandaria e engomadoria com recolha e entrega em Felgueiras',
-    ogTitulo: 'Lavandaria & Engomadoria — NEVOA Premium Services',
+    titulo: 'Lavandaria e engomadoria em Felgueiras, com recolha e entrega',
+    ogTitulo: 'NEVOA Laundry — lavandaria e engomadoria',
     descricao: 'Lavandaria e engomadoria em Felgueiras, com recolha e entrega ao domicílio: vestuário, roupa de casa, edredões, fardas e têxteis de alojamento. Abertura em breve.',
     seccao: 'lavandaria',
     corpo,
     ogImagem: null,
-    jsonLd: [migalhas(ctx, [['Lavandaria & Engomadoria', '/lavandaria/']])],
+    jsonLd: [migalhas(ctx, [['NEVOA Laundry', '/lavandaria/']])],
+  };
+}
+
+// ---------- NEVOA Express: recolhas e entregas ----------
+
+export function express(ctx) {
+  const c = ctx.conteudo;
+  const d = divisao(ctx, 'express');
+  const corpo = `${cabecalho({
+    rotuloTexto: rotuloDivisao(ctx, 'express'),
+    titulo: 'Nós vamos até si. <span class="dourado">Recolhemos e entregamos.</span>',
+    estado: estadoEtiqueta(d.estado),
+    frase: 'Recolhemos em sua casa ou na sua empresa, no dia e à hora que escolher, e devolvemos tudo pronto a usar.',
+    acoes: `${botaoPedido(ctx, 'express', 'Pedir informações')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de saber mais sobre as recolhas e entregas da NEVOA Express.')}`,
+  })}
+${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Recolhemos. Cuidamos. Entregamos.', corpo: `<div class="dividido">
+  <div class="dividido__media">${foto(ctx, d.foto, { sizes: '(min-width: 900px) 420px, 92vw' })}</div>
+  <ol class="passos" role="list">
+    ${c.passosExpress.map((p, i) => `<li class="passo"><span class="passo__n">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></div></li>`).join('\n    ')}
+  </ol>
+</div>` })}`;
+  return {
+    caminho: d.pagina,
+    titulo: 'Recolhas e entregas em casa e na empresa',
+    ogTitulo: 'NEVOA Express — recolhas e entregas',
+    descricao: 'A NEVOA Express recolhe em sua casa ou na sua empresa, no dia e à hora que escolher, e entrega tudo pronto a usar: lavagem, secagem e engomadoria. Em breve.',
+    seccao: 'express',
+    corpo,
+    jsonLd: [migalhas(ctx, [['NEVOA Express', d.pagina]])],
   };
 }
 
@@ -414,19 +460,19 @@ export function sobre(ctx) {
     <p class="cab__frase">Na NEVOA, ser premium não significa ser mais caro. Significa fazer melhor: cuidar de cada espaço como se fosse nosso, tratar cada peça de roupa com atenção, cumprir horários, responder a quem nos procura e não deixar nenhum detalhe ao acaso.</p>
     <ul class="factos" role="list">
       <li>${icone.estrela}<span><b>No terreno desde 1 de outubro de 2026</b>, com a limpeza profissional.</span></li>
-      <li>${icone.local}<span><b>Casa em Felgueiras</b>, a servir todo o distrito do Porto.</span></li>
-      <li>${icone.maquina}<span><b>Lavandaria e engomadoria</b> a abrir em breve, na mesma loja.</span></li>
+      <li>${icone.local}<span><b>Sede em Felgueiras</b>, a trabalhar em todo o Norte.</span></li>
     </ul>
     <div class="cab__acoes">${botaoPedido(ctx)}<a class="botao botao--linha" href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a></div>
   </div>
   <figure class="sobre__foto">${foto(ctx, 'loja-letreiro', { sizes: '(min-width: 900px) 440px, 92vw', prioridade: true })}<figcaption>A nossa loja, na ${esc(site.morada.rua.replace(/, Lote.*$/, ''))}, em Felgueiras.</figcaption></figure>
 </div>
-${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: 'Dois serviços, um só padrão de excelência', corpo: porque(ctx) })}`;
+${seccao({ id: 'divisoes', rot: esc(site.marca), titulo: 'As nossas divisões', corpo: tabelaDivisoes(ctx) })}
+${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(ctx)} divisões, um só padrão de excelência`, corpo: porque(ctx) })}`;
   return {
     caminho: '/a-nevoa/',
     titulo: 'Quem somos',
     ogTitulo: 'A NEVOA — Premium Services em Felgueiras',
-    descricao: 'A NEVOA Premium Services nasceu em Felgueiras para cuidar de espaços e de roupa com rigor, discrição e atenção ao detalhe. Somos premium por escolha, e não por preço.',
+    descricao: `A NEVOA Premium Services nasceu em Felgueiras para cuidar de espaços e de roupa com rigor e atenção ao detalhe: ${ctx.conteudo.divisoes.map((d) => d.nome).join(', ').replace(/, ([^,]*)$/, ' e $1')}, em todo o Norte.`,
     seccao: 'sobre',
     precarregar: [{ srcset: srcsetFoto(ctx, 'loja-letreiro'), sizes: '(min-width: 900px) 440px, 92vw', fmt: 'avif' }],
     corpo,
@@ -456,7 +502,7 @@ export function contactos(ctx) {
     ${pedido(ctx)}
   </div>
 </section>
-${seccao({ id: 'zona', rot: 'Onde trabalhamos', titulo: esc(site.zona.resumo), sub: 'Felgueiras é a nossa base. Levamos a limpeza a casas, empresas, condomínios e alojamentos locais de todo o distrito do Porto; a recolha e entrega da lavandaria serve Felgueiras e a região.', corpo: `<ul class="fichas fichas--zona" role="list">${site.zona.concelhos.map((c) => `<li>${icone.local}${esc(c)}</li>`).join('')}</ul>
+${seccao({ id: 'zona', rot: 'Onde trabalhamos', titulo: esc(site.zona.resumo), sub: esc(site.zona.frase), corpo: `<ul class="fichas fichas--zona" role="list">${site.zona.regioes.map((c) => `<li>${icone.local}${esc(c)}</li>`).join('')}</ul>
   <p class="identificacao">${esc(site.marca)} · ${empresa} · ${esc(site.morada.rua)}, ${esc(site.morada.codigoPostal)} ${esc(site.morada.localidade)}</p>` })}`;
   return {
     caminho: '/contactos/',
@@ -527,10 +573,10 @@ export function privacidade(ctx) {
 export function litigios(ctx) {
   const corpo = `${cabecalho({ rotuloTexto: 'Resolução de litígios', titulo: 'Resolução alternativa de litígios', frase: 'Se não chegarmos a acordo sobre um serviço, estas são as entidades a que pode recorrer.' })}
 <div class="contentor texto">
-  ${ralHtml({ ambito: 'local', concelhos: ['Felgueiras', 'Porto'] })}
+  ${ralHtml({ ambito: 'local', concelhos: ['Felgueiras', 'Porto', 'Braga'] })}
   <p>Pode também apresentar uma reclamação no <a href="https://www.livroreclamacoes.pt/inicio" target="_blank" rel="noopener">Livro de Reclamações Eletrónico</a>.</p>
 </div>`;
-  return { caminho: '/litigios/', titulo: 'Resolução de litígios', descricao: 'As entidades de resolução alternativa de litígios de consumo a que pode recorrer: TRIAVE, CICAP e CNIACC, e o Livro de Reclamações Eletrónico.', seccao: 'legal', legal: true, corpo };
+  return { caminho: '/litigios/', titulo: 'Resolução de litígios', descricao: 'As entidades de resolução alternativa de litígios de consumo a que pode recorrer: TRIAVE, CICAP, CIAB e CNIACC, e o Livro de Reclamações Eletrónico.', seccao: 'legal', legal: true, corpo };
 }
 
 export function naoEncontrada(ctx) {
