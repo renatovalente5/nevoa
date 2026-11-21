@@ -55,6 +55,7 @@ for (const d of conteudo.divisoes) {
   if (!d.nome || !d.curto || !d.area || !/^\/[a-z-]+\/$/.test(d.pagina || '')) erros.push(`divisão ${d.slug}: falta o nome, o curto, a área ou a página`);
   if (!['ativo', 'em-breve'].includes(d.estado)) erros.push(`divisão ${d.slug}: estado «${d.estado}» (ativo ou em-breve)`);
   if (d.foto && !fotos[d.foto]) erros.push(`divisão ${d.slug}: a fotografia ${d.foto} não existe`);
+  if (!d.video && !d.foto && !d.icone) erros.push(`divisão ${d.slug}: sem vídeo, fotografia nem ícone para o cartão`);
   if (d.video && !manifesto.videos[d.video]) erros.push(`divisão ${d.slug}: o vídeo ${d.video} não existe`);
 }
 for (const e of conteudo.espacos) if (!['limpeza', 'empresas'].includes(e.pagina)) erros.push(`espaço ${e.slug}: página «${e.pagina}»`);

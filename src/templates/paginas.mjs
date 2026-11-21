@@ -93,7 +93,7 @@ function confianca(ctx) {
 function cartoesDivisoes(ctx, { sizes = '(min-width: 900px) 380px, 86vw' } = {}) {
   return `<div class="divisoes">
   ${ctx.conteudo.divisoes.map((d) => `<article class="servico-cartao">
-    <div class="servico-cartao__media">${d.video ? video(ctx, d.video, { rotulo: d.rotulo, foco: d.foco }) : foto(ctx, d.foto, { sizes, classe: 'servico-cartao__foto' })}</div>
+    <div class="servico-cartao__media">${d.video ? video(ctx, d.video, { rotulo: d.rotulo, foco: d.foco }) : d.foto ? foto(ctx, d.foto, { sizes, classe: 'servico-cartao__foto' }) : arteDivisao(d)}</div>
     <div class="servico-cartao__corpo">
       ${estadoEtiqueta(d.estado)}
       <h3><a href="${ctx.href(d.pagina)}" class="servico-cartao__ligacao">${esc(d.nome)}</a></h3>
@@ -103,6 +103,10 @@ function cartoesDivisoes(ctx, { sizes = '(min-width: 900px) 380px, 86vw' } = {})
   </article>`).join('\n  ')}
 </div>`;
 }
+
+// O quadro de uma divisão que ainda não tem fotografias verdadeiras (a lavandaria e as recolhas ainda não abriram, e
+// as imagens do Instagram para elas são feitas por IA): o ícone dourado no anel, sobre a névoa da marca.
+const arteDivisao = (d) => `<div class="arte-divisao" aria-hidden="true"><span class="arte-divisao__anel">${icone[d.icone]}</span></div>`;
 
 // A tabela do grupo, como o João a escreveu: Divisão · Área de negócio (e o estado), cada linha leva à página.
 function tabelaDivisoes(ctx) {
@@ -406,7 +410,7 @@ ${seccao({ id: 'o-que-tratamos', rot: 'O que tratamos', titulo: 'Todo o tipo de 
   ${c.roupa.map((r) => `<li class="cartao cartao--simples"><span class="circulo-icone">${icone[r.icone]}</span><h3>${esc(r.nome)}</h3><p>${esc(r.linha)}</p></li>`).join('\n  ')}
 </ul>` })}
 ${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Simples, cómodo e sem complicações', corpo: `<div class="dividido">
-  <div class="dividido__media">${foto(ctx, 'marca-engomadoria', { sizes: '(min-width: 900px) 420px, 92vw' })}</div>
+  <div class="dividido__media">${foto(ctx, 'loja-fachada', { sizes: '(min-width: 900px) 420px, 92vw', alt: 'A loja da NEVOA em Felgueiras, onde vai abrir a lavandaria' })}</div>
   <ol class="passos" role="list">
     ${c.passosLavandaria.map((p, i) => `<li class="passo"><span class="passo__n">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></div></li>`).join('\n    ')}
   </ol>
@@ -445,7 +449,7 @@ export function express(ctx) {
     acoes: `${botaoPedido(ctx, 'express', 'Pedir informações')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de saber mais sobre as recolhas e entregas da NEVOA Express.')}`,
   })}
 ${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Do agendamento à entrega', corpo: `<div class="dividido">
-  <div class="dividido__media">${foto(ctx, d.foto, { sizes: '(min-width: 900px) 420px, 92vw' })}</div>
+  <div class="dividido__media">${arteDivisao(d)}</div>
   <ol class="passos" role="list">
     ${c.passosExpress.map((p, i) => `<li class="passo"><span class="passo__n">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></div></li>`).join('\n    ')}
   </ol>
@@ -476,7 +480,7 @@ export function sobre(ctx) {
     </ul>
     <div class="cab__acoes">${botaoPedido(ctx)}<a class="botao botao--linha" href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a></div>
   </div>
-  <figure class="sobre__foto">${foto(ctx, 'loja-letreiro', { sizes: '(min-width: 900px) 440px, 92vw', prioridade: true })}<figcaption>A nossa loja, na ${esc(site.morada.rua.replace(/, Lote.*$/, ''))}, em Felgueiras.</figcaption></figure>
+  <figure class="sobre__foto">${foto(ctx, 'loja-fachada', { sizes: '(min-width: 900px) 440px, 92vw', prioridade: true })}<figcaption>A nossa loja, na ${esc(site.morada.rua.replace(/, Lote.*$/, ''))}, em Felgueiras.</figcaption></figure>
 </div>
 ${seccao({ id: 'divisoes', rot: esc(site.marca), titulo: 'As nossas divisões', corpo: tabelaDivisoes(ctx) })}
 ${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(ctx)} divisões, um só padrão de excelência`, corpo: pilares(ctx) })}`;
@@ -486,7 +490,7 @@ ${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(c
     ogTitulo: 'A NEVOA — Premium Services em Felgueiras',
     descricao: `A NEVOA Premium Services nasceu em Felgueiras para cuidar de espaços e de roupa com rigor e atenção ao detalhe: ${ctx.conteudo.divisoes.map((d) => d.nome).join(', ').replace(/, ([^,]*)$/, ' e $1')}, em todo o Norte.`,
     seccao: 'sobre',
-    precarregar: [{ srcset: srcsetFoto(ctx, 'loja-letreiro'), sizes: '(min-width: 900px) 440px, 92vw', fmt: 'avif' }],
+    precarregar: [{ srcset: srcsetFoto(ctx, 'loja-fachada'), sizes: '(min-width: 900px) 440px, 92vw', fmt: 'avif' }],
     corpo,
     jsonLd: [migalhas(ctx, [['A NEVOA', '/a-nevoa/']])],
   };
