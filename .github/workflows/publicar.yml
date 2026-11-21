@@ -1,6 +1,7 @@
-# Pré-visualização no GitHub Pages (noindex): cada envio para a main constrói as imagens, o site (a proposta A
-# «Névoa», a escolhida) e as provas, e publica. Quando o nevoagroup.pt estiver comprado, constrói-se com --producao
-# --url=https://nevoagroup.pt (indexável, com sitemap).
+# O site no ar em https://nevoagroup.pt (GitHub Pages com o domínio do grupo; o DNS está na Hostinger: 4 A e 4 AAAA do
+# Pages no @ e o www → renatovalente5.github.io). Cada envio para a main constrói as imagens, o site (a proposta A
+# «Névoa», a escolhida) e as provas, e publica: indexável, com robots e sitemap; as legais e o 404 com noindex.
+# O endereço antigo renatovalente5.github.io/nevoa/ reencaminha sozinho para o domínio.
 name: Publicar
 on:
   push:
@@ -36,9 +37,9 @@ jobs:
         with:
           node-version: 22
       - name: Construir o site
-        run: node scripts/build.mjs --base=/nevoa --url=https://renatovalente5.github.io/nevoa
+        run: node scripts/build.mjs --producao --url=https://nevoagroup.pt
       - name: Testar
-        run: node scripts/testar.mjs --base=/nevoa
+        run: node scripts/testar.mjs --producao --url=https://nevoagroup.pt
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

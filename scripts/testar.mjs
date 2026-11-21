@@ -4,6 +4,7 @@
 // Renato (rodapé «© ano Marca», nada de passos nem frase de fecho na página inicial, nota das chamadas, WhatsApp sem
 // número, Livro de Reclamações no rodapé).
 //   node scripts/testar.mjs [--base=/nevoa]
+//   node scripts/testar.mjs --producao --url=https://nevoagroup.pt   (mais: robots, sitemap, canonical e noindex)
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -90,5 +91,26 @@ for (const p of paginas) prova(!/todo o distrito do Porto|distrito do Porto\.<\/
 prova(/CIAB/.test(ler('litigios/index.html')), 'litígios: falta o CIAB (distrito de Braga)');
 prova(/em breve/i.test(ler('lavandaria/index.html')) && /Em breve/.test(inicio), 'a lavandaria deixou de dizer «Em breve»');
 prova(/name="servico" value="Recolhas e entregas"/.test(ler('contactos/index.html')), 'contactos: o pedido não tem as recolhas e entregas');
+// produção (nevoagroup.pt): indexável, com robots e sitemap; as legais e o 404 com noindex e fora do sitemap
+if (process.argv.includes('--producao')) {
+  const url = (process.argv.find((a) => a.startsWith('--url=')) || '--url=').slice(6).replace(/\/$/, '');
+  prova(/^https:\/\/[a-z0-9.-]+$/.test(url), `--url=${url}: endereço do domínio em falta`);
+  const robots = existsSync(join(SITE, 'robots.txt')) ? readFileSync(join(SITE, 'robots.txt'), 'utf8') : '';
+  prova(robots.includes(`Sitemap: ${url}/sitemap.xml`), 'robots.txt: sem a linha do sitemap');
+  prova(!/Disallow:\s*\//.test(robots), 'robots.txt: bloqueia páginas (o Google tem de ler o noindex das legais)');
+  const mapa = existsSync(join(SITE, 'sitemap.xml')) ? readFileSync(join(SITE, 'sitemap.xml'), 'utf8') : '';
+  const locs = [...mapa.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  prova(locs.length >= 7, `sitemap: só ${locs.length} páginas`);
+  for (const l of locs) prova(l.startsWith(url + '/') && existsSync(join(SITE, new URL(l).pathname, 'index.html')), `sitemap: ${l} não existe em ${url}`);
+  for (const p of paginas) {
+    const rel = p.slice(SITE.length);
+    const html = readFileSync(p, 'utf8');
+    const canonical = (html.match(/<link rel="canonical" href="([^"]+)"/) || [])[1] || '';
+    prova(canonical.startsWith(url + '/'), `${rel}: canonical ${canonical} fora de ${url}`);
+    prova(!html.includes('/propostas/'), `${rel}: a barra das propostas foi para produção`);
+    if (/\/(privacidade|litigios)\/|404\.html/.test(rel)) prova(!locs.includes(canonical), `${rel}: legal no sitemap`);
+    else { prova(!html.includes('name="robots"'), `${rel}: noindex em produção`); prova(locs.includes(canonical), `${rel}: falta no sitemap`); }
+  }
+}
 console.log(`${paginas.length} páginas, ${ok} provas certas, ${falhas.length} falhas.`);
 if (falhas.length) { console.log(falhas.slice(0, 40).join('\n')); process.exit(1); }
