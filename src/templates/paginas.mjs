@@ -480,7 +480,7 @@ export function sobre(ctx) {
     </ul>
     <div class="cab__acoes">${botaoPedido(ctx)}<a class="botao botao--linha" href="${site.mapa}" target="_blank" rel="noopener">Como chegar</a></div>
   </div>
-  <figure class="sobre__foto">${foto(ctx, 'loja-fachada', { sizes: '(min-width: 900px) 440px, 92vw', prioridade: true })}<figcaption>A nossa loja, na ${esc(site.morada.rua.replace(/, Lote.*$/, ''))}, em Felgueiras.</figcaption></figure>
+  <figure class="sobre__foto">${foto(ctx, 'loja-letreiro', { sizes: '(min-width: 900px) 440px, 92vw', prioridade: true })}<figcaption>A nossa loja, na ${esc(site.morada.rua.replace(/, Lote.*$/, ''))}, em Felgueiras.</figcaption></figure>
 </div>
 ${seccao({ id: 'divisoes', rot: esc(site.marca), titulo: 'As nossas divisões', corpo: tabelaDivisoes(ctx) })}
 ${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(ctx)} divisões, um só padrão de excelência`, corpo: pilares(ctx) })}`;
@@ -490,7 +490,7 @@ ${seccao({ id: 'compromisso', rot: 'O nosso compromisso', titulo: `${nDivisoes(c
     ogTitulo: 'A NEVOA — Premium Services em Felgueiras',
     descricao: `A NEVOA Premium Services nasceu em Felgueiras para cuidar de espaços e de roupa com rigor e atenção ao detalhe: ${ctx.conteudo.divisoes.map((d) => d.nome).join(', ').replace(/, ([^,]*)$/, ' e $1')}, em todo o Norte.`,
     seccao: 'sobre',
-    precarregar: [{ srcset: srcsetFoto(ctx, 'loja-fachada'), sizes: '(min-width: 900px) 440px, 92vw', fmt: 'avif' }],
+    precarregar: [{ srcset: srcsetFoto(ctx, 'loja-letreiro'), sizes: '(min-width: 900px) 440px, 92vw', fmt: 'avif' }],
     corpo,
     jsonLd: [migalhas(ctx, [['A NEVOA', '/a-nevoa/']])],
   };
