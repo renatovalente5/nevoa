@@ -1,8 +1,8 @@
 {
   "divisoes": [
     { "slug": "cleaning", "nome": "NEVOA Cleaning", "curto": "Cleaning", "area": "Limpezas profissionais", "pagina": "/limpeza/", "estado": "ativo", "video": "vidros", "rotulo": "A equipa da NEVOA a limpar uma janela ao pôr do sol", "foco": 30 },
-    { "slug": "laundry", "nome": "NEVOA Laundry", "curto": "Laundry", "area": "Lavandaria e engomadoria", "pagina": "/lavandaria/", "estado": "em-breve", "icone": "maquina" },
-    { "slug": "express", "nome": "NEVOA Express", "curto": "Express", "area": "Recolhas e entregas", "pagina": "/recolhas-e-entregas/", "estado": "em-breve", "icone": "carrinha" }
+    { "slug": "laundry", "nome": "NEVOA Laundry", "curto": "Laundry", "area": "Lavandaria e engomadoria", "pagina": "/lavandaria/", "estado": "em-breve", "foto": "loja-letreiro", "icone": "maquina" },
+    { "slug": "express", "nome": "NEVOA Express", "curto": "Express", "area": "Recolhas e entregas", "pagina": "/recolhas-e-entregas/", "estado": "em-breve", "foto": "marca-recolha", "icone": "carrinha" }
   ],
   "espacos": [
     { "slug": "casas", "nome": "Casas", "icone": "casa", "linha": "Ambientes limpos e acolhedores, cuidados como se fossem nossos.", "pagina": "limpeza" },

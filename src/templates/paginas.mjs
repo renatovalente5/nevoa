@@ -449,7 +449,7 @@ export function express(ctx) {
     acoes: `${botaoPedido(ctx, 'express', 'Pedir informações')}${botaoWhatsapp(ctx, 'WhatsApp', 'Olá! Gostava de saber mais sobre as recolhas e entregas da NEVOA Express.')}`,
   })}
 ${seccao({ id: 'como-funciona', rot: 'Como funciona', titulo: 'Do agendamento à entrega', corpo: `<div class="dividido">
-  <div class="dividido__media">${arteDivisao(d)}</div>
+  <div class="dividido__media">${d.foto ? foto(ctx, d.foto, { sizes: '(min-width: 900px) 420px, 92vw' }) : arteDivisao(d)}</div>
   <ol class="passos" role="list">
     ${c.passosExpress.map((p, i) => `<li class="passo"><span class="passo__n">${String(i + 1).padStart(2, '0')}</span><div><h3>${esc(p.nome)}</h3><p>${esc(p.linha)}</p></div></li>`).join('\n    ')}
   </ol>
