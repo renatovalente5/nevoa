@@ -201,8 +201,12 @@ html[data-tema="claro"] .etiqueta--ativo { background: rgba(62, 120, 60, .1); co
   .capa--nevoa { --emblema: min(46vw, 230px); min-height: 0; padding-top: calc(var(--topo) + 4vh + var(--emblema) * .905 + 36px); }
   .capa__emblema { width: var(--emblema); }
 }
-@media (max-width: 899px) and (max-height: 700px) { .capa--nevoa { padding-top: calc(var(--topo) + 64px); } }
-@media (max-height: 700px) and (max-width: 899px) { .capa__emblema { display: none; } }
+/* telemóveis baixos (o iPhone com as barras do Safari fica com ~660 px, o SE com ~550): o logótipo fica na capa, mais
+   pequeno, em vez de desaparecer (o Renato, 21 nov: «gostava mais com o logo na capa») */
+@media (max-width: 899px) and (max-height: 700px) {
+  .capa--nevoa { --emblema: min(32vw, 128px); padding-top: calc(var(--topo) + 14px + var(--emblema) * .905 + 22px); }
+  .capa__emblema { top: calc(var(--topo) + 14px); }
+}
 .capa__titulo { max-width: 11.5ch; }
 .capa--vidro .capa__titulo { max-width: none; }
 .capa__titulo { font-size: clamp(44px, 9.4vw, 98px); line-height: .98; letter-spacing: -.035em; font-weight: 500; }
