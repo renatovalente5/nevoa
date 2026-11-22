@@ -23,6 +23,23 @@ const migalhas = (ctx, itens) => ({
   itemListElement: [['Início', '/'], ...itens].map(([nome, caminho], i) => ({ '@type': 'ListItem', position: i + 1, name: nome, item: ctx.absPagina(caminho) })),
 });
 
+// «Mo-Sa 08:00-20:00» → o horário como o Google o lê nos dados estruturados (openingHoursSpecification)
+const DIAS = { Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday', Sa: 'Saturday', Su: 'Sunday' };
+const horarioSchema = (texto) => texto.split(/,\s*/).map((parte) => {
+  const m = parte.match(/^(Mo|Tu|We|Th|Fr|Sa|Su)(?:-(Mo|Tu|We|Th|Fr|Sa|Su))? (\d\d:\d\d)-(\d\d:\d\d)$/);
+  if (!m) throw new Error(`site.json → horario.schema: «${parte}» (formato «Mo-Sa 08:00-20:00»)`);
+  const k = Object.keys(DIAS);
+  return { '@type': 'OpeningHoursSpecification', dayOfWeek: k.slice(k.indexOf(m[1]), k.indexOf(m[2] || m[1]) + 1).map((d) => DIAS[d]), opens: m[3], closes: m[4] };
+});
+
+// Uma imagem do manifesto em JPEG, com o endereço completo (para os dados estruturados)
+const jpegAbs = (ctx, nome) => {
+  const m = ctx.manifesto.fotos[nome];
+  const f = `${nome}-${m.resumo}-${m.jpg}.jpg`;
+  ctx.usados.add(f);
+  return ctx.abs('/assets/img/' + f);
+};
+
 const negocio = (ctx) => {
   const { site } = ctx;
   return {
@@ -34,13 +51,15 @@ const negocio = (ctx) => {
     slogan: site.lema,
     description: site.descricao,
     url: ctx.absPagina('/'),
-    logo: ctx.partilhaMarca,
-    image: ctx.partilhaMarca,
+    // o logótipo para o Google: o emblema quadrado (512 px); as imagens: a fachada verdadeira e a de partilha
+    logo: ctx.abs('/icone-512.png'),
+    image: [jpegAbs(ctx, 'loja-fachada'), ctx.partilhaMarca],
     telephone: '+351' + site.telefone.replace(/\s/g, ''),
     email: site.email,
     address: { '@type': 'PostalAddress', streetAddress: site.morada.rua, postalCode: site.morada.codigoPostal, addressLocality: site.morada.localidade, addressRegion: site.morada.distrito, addressCountry: 'PT' },
+    hasMap: site.mapa,
     areaServed: site.zona.areas.map((r) => ({ '@type': 'AdministrativeArea', name: r })),
-    openingHours: site.horario.schema,
+    openingHoursSpecification: horarioSchema(site.horario.schema),
     sameAs: [`https://www.instagram.com/${site.instagram}/`],
     department: ctx.conteudo.divisoes.map((d) => ({ '@type': 'Organization', name: d.nome, description: d.area, url: ctx.absPagina(d.pagina) })),
     knowsAbout: ['Limpeza profissional', 'Limpeza de casas', 'Limpeza de escritórios', 'Limpeza de espaços de coworking', 'Limpeza de centros empresariais', 'Limpeza de unidades hoteleiras', 'Limpeza pós-obra', 'Limpeza de condomínios', 'Limpeza de alojamento local', 'Lavandaria', 'Engomadoria', 'Recolhas e entregas'],
@@ -523,7 +542,8 @@ ${seccao({ id: 'zona', rot: 'Onde trabalhamos', titulo: esc(site.zona.titulo), s
     caminho: '/contactos/',
     titulo: 'Contactos e pedido de orçamento',
     ogTitulo: 'Contactos — NEVOA Premium Services',
-    descricao: `Peça um orçamento de limpeza ou de lavandaria à NEVOA: WhatsApp, telefone ${site.telefone} ou ${site.email}. ${site.morada.rua}, ${site.morada.localidade}. ${site.horario.texto}.`,
+    // até ~155 caracteres (o que o Google mostra); sem o número, que no site leva sempre a nota do custo da chamada
+    descricao: `Peça um orçamento de limpeza ou de lavandaria à NEVOA, por WhatsApp, telefone ou email. ${site.morada.rua.split(',')[0]}, ${site.morada.localidade}. ${site.horario.curto}.`,
     seccao: 'contactos',
     corpo,
     jsonLd: [migalhas(ctx, [['Contactos', '/contactos/']])],

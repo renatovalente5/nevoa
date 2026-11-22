@@ -2,8 +2,9 @@
 
 Site da NEVOA Premium Services, um grupo com divisões (21 nov 2026, o João, dono da NEVOA): NEVOA Cleaning
 (limpezas profissionais), NEVOA Laundry (lavandaria e engomadoria, em breve) e NEVOA Express (recolhas e entregas, em
-breve). Sede em Felgueiras, a trabalhar em todo o Norte. Pré-visualização: https://renatovalente5.github.io/nevoa/
-(noindex); o domínio do grupo vai ser nevoagroup.pt. O desenho é a proposta A «Névoa»; as outras duas (B «Seda», C
+breve). Sede em Felgueiras, a trabalhar em todo o Norte. No ar em https://nevoagroup.pt desde 22 nov 2026 (o
+renatovalente5.github.io/nevoa/ reencaminha), indexável: mapa do site com as datas do git, Search Console e Bing, e o
+IndexNow avisa o Bing depois de cada publicação (`scripts/indexnow.mjs`). O desenho é a proposta A «Névoa»; as outras duas (B «Seda», C
 «Vidro») só se constroem com `--propostas`, localmente. A página inicial abre com a intro (os vídeos do logótipo
 deles, em `media/intro/`), uma vez por visita.
 

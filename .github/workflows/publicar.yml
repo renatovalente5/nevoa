@@ -2,6 +2,7 @@
 # Pages no @ e o www → renatovalente5.github.io). Cada envio para a main constrói as imagens, o site (a proposta A
 # «Névoa», a escolhida) e as provas, e publica: indexável, com robots e sitemap; as legais e o 404 com noindex.
 # O endereço antigo renatovalente5.github.io/nevoa/ reencaminha sozinho para o domínio.
+# Depois de publicar, o IndexNow avisa o Bing das páginas novas ou mudadas (as datas do mapa do site saem do git).
 name: Publicar
 on:
   push:
@@ -18,8 +19,13 @@ jobs:
   construir:
     name: Construir
     runs-on: ubuntu-latest
+    outputs:
+      indexnow: ${{ steps.indexnow.outputs.urls }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # o histórico todo: as datas do mapa do site saem do git (numa clonagem rasa sairiam erradas)
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -40,6 +46,9 @@ jobs:
         run: node scripts/build.mjs --producao --url=https://nevoagroup.pt
       - name: Testar
         run: node scripts/testar.mjs --producao --url=https://nevoagroup.pt
+      - name: O que mudou (para o IndexNow)
+        id: indexnow
+        run: node scripts/indexnow.mjs --comparar --url=https://nevoagroup.pt
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
@@ -53,3 +62,22 @@ jobs:
     steps:
       - id: publicar
         uses: actions/deploy-pages@v4
+  avisar:
+    name: Avisar o Bing (IndexNow)
+    needs: [construir, publicar]
+    if: needs.construir.outputs.indexnow != '' && needs.construir.outputs.indexnow != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/indexnow.mjs
+            content/site.json
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: IndexNow
+        env:
+          URLS: ${{ needs.construir.outputs.indexnow }}
+        run: node scripts/indexnow.mjs --enviar --url=https://nevoagroup.pt

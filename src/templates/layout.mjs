@@ -72,6 +72,7 @@ ${indexar ? '' : '<meta name="robots" content="noindex">\n'}<link rel="canonical
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="${temaCor}">
 <link rel="icon" href="${ctx.asset('/favicon.png')}" sizes="32x32" type="image/png">
+<link rel="icon" href="${ctx.asset('/icone-192.png')}" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="${ctx.asset('/apple-touch-icon.png')}">
 <link rel="manifest" href="${ctx.asset('/site.webmanifest')}">
 <link rel="preload" href="${ctx.asset('/assets/fontes/' + assets.fonte)}" as="font" type="font/woff2" crossorigin>

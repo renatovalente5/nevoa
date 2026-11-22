@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { criarContexto, partilhaMarca } from '../src/templates/util.mjs';
 import { pagina, VARIANTES } from '../src/templates/layout.mjs';
@@ -163,8 +164,19 @@ writeFileSync(join(opcoes.saida, 'site.webmanifest'), JSON.stringify({
 writeFileSync(join(opcoes.saida, '.nojekyll'), '');
 if (opcoes.producao) {
   const indexaveis = todas.filter((p) => p.indexar !== false && !p.legal);
+  // O <lastmod> sai do git: a data e a hora do último commit que mexeu no que faz as páginas (os modelos são um só
+  // ficheiro para todas, por isso a data é a mesma em todas), nunca o relógio do build. Numa clonagem rasa sairia a
+  // data do último commit, fosse ele qual fosse: no CI o checkout traz o histórico todo (fetch-depth: 0).
+  const git = (...a) => execFileSync('git', a, { cwd: RAIZ, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  if (git('rev-parse', '--is-shallow-repository') === 'true') throw new Error('histórico raso: as datas do mapa do site sairiam erradas (fetch-depth: 0 no checkout)');
+  const data = git('log', '-1', '--format=%cI', '--', 'content', 'src', 'media', 'legal-comum', 'scripts/build.mjs', 'scripts/imagens.py');
+  if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d([+-]\d\d:\d\d|Z)$/.test(data)) throw new Error(`a data do git para o mapa do site saiu «${data}»`);
   writeFileSync(join(opcoes.saida, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${opcoes.url}/sitemap.xml\n`);
-  writeFileSync(join(opcoes.saida, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${indexaveis.map((p) => `  <url><loc>${p.abs}</loc></url>`).join('\n')}\n</urlset>\n`);
+  writeFileSync(join(opcoes.saida, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${indexaveis.map((p) => `  <url><loc>${p.abs}</loc><lastmod>${data}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+  // o Bing Webmaster Tools (o código é o da conta do Renato, o mesmo em todos os sites) e a chave do IndexNow
+  // (pública por desenho: é ela que prova que o aviso das páginas novas vem do dono do domínio; scripts/indexnow.mjs)
+  writeFileSync(join(opcoes.saida, 'BingSiteAuth.xml'), `<?xml version="1.0"?>\n<users>\n\t<user>${site.verificacoes.bing}</user>\n</users>\n`);
+  writeFileSync(join(opcoes.saida, `${site.verificacoes.indexnow}.txt`), site.verificacoes.indexnow);
 } else {
   // pré-visualização: as páginas levam noindex; o robots deixa ler (para o Google ver o noindex)
   writeFileSync(join(opcoes.saida, 'robots.txt'), 'User-agent: *\nAllow: /\n');

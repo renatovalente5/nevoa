@@ -102,6 +102,20 @@ if (process.argv.includes('--producao')) {
   const locs = [...mapa.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   prova(locs.length >= 7, `sitemap: só ${locs.length} páginas`);
   for (const l of locs) prova(l.startsWith(url + '/') && existsSync(join(SITE, new URL(l).pathname, 'index.html')), `sitemap: ${l} não existe em ${url}`);
+  // as datas do mapa vêm do git, com hora e fuso (com só o dia, duas publicações no mesmo dia não se distinguiam)
+  const datasMapa = [...mapa.matchAll(/<url><loc>[^<]+<\/loc>(?:<lastmod>([^<]+)<\/lastmod>)?<\/url>/g)].map((m) => m[1] || '');
+  prova(datasMapa.length === locs.length && datasMapa.every((d) => /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d([+-]\d\d:\d\d|Z)$/.test(d)), `sitemap: páginas sem <lastmod> do git (${datasMapa.join(', ')})`);
+  // o Bing (ficheiro de verificação da conta) e a chave do IndexNow, na raiz
+  const verif = JSON.parse(readFileSync(join(RAIZ, 'content', 'site.json'), 'utf8')).verificacoes;
+  prova(ler('BingSiteAuth.xml').includes(`<user>${verif.bing}</user>`), 'BingSiteAuth.xml em falta ou com outro código');
+  prova(/^[0-9a-f]{32}$/.test(verif.indexnow) && ler(`${verif.indexnow}.txt`) === verif.indexnow, 'a chave do IndexNow não está na raiz');
+  // o negócio para o Google: logótipo quadrado de 512 px, horário legível, imagens que existem; o ícone de 192 px
+  const negocioLd = [...inicio.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1])).find((j) => j['@type'] === 'LocalBusiness') || {};
+  const png = existsSync(join(SITE, 'icone-512.png')) ? readFileSync(join(SITE, 'icone-512.png')) : Buffer.alloc(24);
+  prova(negocioLd.logo === `${url}/icone-512.png` && png.readUInt32BE(16) === 512 && png.readUInt32BE(20) === 512, `negócio: o logótipo (${negocioLd.logo}) não é o emblema de 512 px`);
+  prova(Array.isArray(negocioLd.openingHoursSpecification) && negocioLd.openingHoursSpecification.every((h) => h.dayOfWeek?.length && /^\d\d:\d\d$/.test(h.opens) && /^\d\d:\d\d$/.test(h.closes)), 'negócio: horário (openingHoursSpecification) em falta');
+  for (const i of [].concat(negocioLd.image || [])) prova(i.startsWith(url + '/') && existsSync(join(SITE, new URL(i).pathname)), `negócio: a imagem ${i} não existe`);
+  for (const p of paginas) prova(readFileSync(p, 'utf8').includes('<link rel="icon" href="/icone-192.png" sizes="192x192"'), `${p.slice(SITE.length)}: sem o ícone de 192 px (o Google quer múltiplos de 48)`);
   for (const p of paginas) {
     const rel = p.slice(SITE.length);
     const html = readFileSync(p, 'utf8');
