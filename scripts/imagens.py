@@ -12,7 +12,8 @@ Lê:
 
 Escreve em .cache/imagens/ (o nome de cada ficheiro leva um resumo do original: só se refaz o que muda) e o manifesto
 .cache/imagens/manifesto.json, que o scripts/build.mjs lê para escrever os <picture> e copiar para _site/ só o que
-as páginas usam.
+as páginas usam. Para o painel (backoffice), de cada fotografia: uma miniatura de 320 px e uma grande de 1200 px em
+WebP, que o build.mjs põe em assets/fotos/ com o nome fixo (miniatura-<nome>.webp, grande-<nome>.webp).
 
     python3 scripts/imagens.py
 """
@@ -103,6 +104,22 @@ def versoes(nome, origem):
     return info
 
 
+PAINEL = (('miniatura', 320), ('grande', 1200))
+
+
+def painel(nome, origem):
+    """As duas versões que o painel mostra (as listas e a janela de cada fotografia), nunca aumentadas."""
+    h = resumo(origem, extra=f'painel-{PAINEL}')
+    out = {tipo: f'painel-{tipo}-{nome}-{h}.webp' for tipo, _ in PAINEL}
+    if all(os.path.exists(os.path.join(CACHE, f)) for f in out.values()):
+        return out
+    im = ImageOps.exif_transpose(Image.open(origem)).convert('RGB')
+    for tipo, w in PAINEL:
+        r = im if im.width <= w else im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+        guardar(r, os.path.join(CACHE, out[tipo]), 'webp', q=82)
+    return out
+
+
 def marca():
     """As peças do logótipo nas alturas em que aparecem, os ícones e o cartão de partilha."""
     out = {}
@@ -155,9 +172,10 @@ def main():
             print('Entradas de content/fotos.json sem fotografia:', ', '.join(sem_ficheiro))
         sys.exit(1)
     os.makedirs(CACHE, exist_ok=True)
-    manifesto = {'fotos': {}, 'videos': {}, 'marca': None}
+    manifesto = {'fotos': {}, 'painel': {}, 'videos': {}, 'marca': None}
     for nome, f in fotos.items():
         manifesto['fotos'][nome] = versoes(nome, f)
+        manifesto['painel'][nome] = painel(nome, f)
     for f in sorted(glob.glob(os.path.join(VIDEOS, '*.jpg'))):
         nome = os.path.splitext(os.path.basename(f))[0]
         info = versoes('video-' + nome, f)

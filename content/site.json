@@ -18,16 +18,38 @@
     "distrito": "Porto"
   },
   "mapa": "https://www.google.com/maps/search/?api=1&query=Rua%20Dr.%20Francisco%20Dias%20da%20Cunha%2062%2C%204610-282%20Felgueiras",
-  "horario": { "texto": "Segunda a sábado, das 8h às 20h", "curto": "Seg. a sáb., 8h–20h", "schema": "Mo-Sa 08:00-20:00" },
+  "horario": [
+    {
+      "de": "Mo",
+      "ate": "Sa",
+      "abre": "08:00",
+      "fecha": "20:00"
+    }
+  ],
   "desde": "2026-10-01",
   "zona": {
     "resumo": "Sede em Felgueiras, a trabalhar em todo o Norte",
     "curto": "Felgueiras e todo o Norte",
     "titulo": "Em qualquer parte do Norte",
     "frase": "A sede é em Felgueiras. Trabalhamos nos distritos do Porto e de Braga, e onde mais precisar de nós.",
-    "areas": ["Distrito do Porto", "Distrito de Braga", "Região Norte, Portugal"]
+    "areas": [
+      "Distrito do Porto",
+      "Distrito de Braga",
+      "Região Norte, Portugal"
+    ]
   },
-  "empresa": { "firma": null, "nif": null },
-  "verificacoes": { "bing": "DE1BA388910A8DC62D873CAEEF7B2BB8", "indexnow": "e3ed5e13054df8694512c6c5e265a284" },
+  "empresa": {
+    "firma": null,
+    "nif": null
+  },
+  "fotos": {
+    "fachada": "loja-fachada",
+    "letreiro": "loja-letreiro",
+    "empresas": "posobra-escada-depois"
+  },
+  "verificacoes": {
+    "bing": "DE1BA388910A8DC62D873CAEEF7B2BB8",
+    "indexnow": "e3ed5e13054df8694512c6c5e265a284"
+  },
   "variante": "a"
 }

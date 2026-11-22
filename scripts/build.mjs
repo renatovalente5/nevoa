@@ -21,6 +21,7 @@ import { criarContexto, partilhaMarca } from '../src/templates/util.mjs';
 import { pagina, VARIANTES } from '../src/templates/layout.mjs';
 import * as P from '../src/templates/paginas.mjs';
 import { livroCss } from '../legal-comum/index.mjs';
+import * as R from '../src/lib/regras.mjs';
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), '..');
 const arg = (n, d) => { const a = process.argv.find((x) => x.startsWith(`--${n}=`)); return a ? a.split('=').slice(1).join('=') : d; };
@@ -34,39 +35,41 @@ const opcoes = {
   saida: join(RAIZ, arg('saida', '_site')),
 };
 
-const ler = (f) => JSON.parse(readFileSync(join(RAIZ, f), 'utf8'));
-const site = ler('content/site.json');
-const conteudo = ler('content/servicos.json');
-const fotos = ler('content/fotos.json');
+// ---- o conteúdo, conferido pelas regras (src/lib/regras.mjs: as mesmas do painel) ----
+// Um problema que «bloqueia» pára a publicação (o site fica como estava); o que «neutraliza» fica fora desta construção
+// (um cartão, um par do antes e depois, a fotografia de uma divisão); os avisos e os lembretes só se escrevem. As
+// anotações (::error / ::warning) levam o ecrã do painel no título: o painel mostra-as na Publicação.
+const anotar = (tipo, p) => console.log(`::${tipo} title=${p.ecra || 'Conteúdo'}::${p.mensagem.replace(/\n/g, ' ')}`);
+const textos = Object.fromEntries(Object.entries(R.FICHEIROS).map(([k, f]) => [k, existsSync(join(RAIZ, f)) ? readFileSync(join(RAIZ, f), 'utf8') : null]));
+const pastaFotos = join(RAIZ, R.PASTAS.fotos);
+textos.ficheirosFotos = existsSync(pastaFotos) ? readdirSync(pastaFotos).filter((f) => f.endsWith('.jpg')).map((f) => f.slice(0, -4)) : [];
+const problemas = R.validar(textos);
+const parar = R.bloqueios(problemas);
+if (parar.length) {
+  for (const p of parar) anotar('error', p);
+  console.error(`O conteúdo tem problemas que param a publicação:\n- ${parar.map((p) => `${p.ecra}: ${p.mensagem}`).join('\n- ')}`);
+  process.exit(1);
+}
+for (const p of problemas) if (p.classe !== 'bloqueia') anotar('warning', p);
+const { site, servicos: conteudo } = R.paraOSite(JSON.parse(textos.site), JSON.parse(textos.servicos), problemas);
+const fotos = JSON.parse(textos.fotos);
 opcoes.padrao = site.variante;
 const CACHE = join(RAIZ, '.cache', 'imagens');
 if (!existsSync(join(CACHE, 'manifesto.json'))) throw new Error('Falta .cache/imagens/manifesto.json: corre primeiro python3 scripts/imagens.py');
 const manifesto = JSON.parse(readFileSync(join(CACHE, 'manifesto.json'), 'utf8'));
 
-// ---- verificações do conteúdo (a construção pára com a lista do que está mal) ----
+// ---- o que as regras não sabem: as versões para a web, os vídeos e a intro (é do repositório, não do painel) ----
 const erros = [];
 if (!VARIANTES[site.variante]) erros.push(`site.json: variante «${site.variante}» desconhecida (a, b ou c)`);
-for (const [n, f] of Object.entries(fotos)) {
-  if (!f.alt || f.alt.length < 12) erros.push(`fotografia ${n}: descrição em falta ou curta`);
-  if (!manifesto.fotos[n]) erros.push(`fotografia ${n}: não está no manifesto (corre scripts/imagens.py)`);
-}
-for (const p of conteudo.antesDepois) for (const lado of ['antes', 'depois']) if (!fotos[`posobra-${p.slug}-${lado}`]) erros.push(`antes e depois «${p.slug}»: falta a fotografia ${lado}`);
+for (const n of Object.keys(fotos)) if (!manifesto.fotos[n] || !manifesto.painel?.[n]) erros.push(`fotografia ${n}: não está no manifesto (corre scripts/imagens.py)`);
 for (const v of ['vidros', 'equipa']) if (!manifesto.videos[v]) erros.push(`vídeo ${v}: não está no manifesto`);
-for (const d of conteudo.divisoes) {
-  if (!d.nome || !d.curto || !d.area || !/^\/[a-z-]+\/$/.test(d.pagina || '')) erros.push(`divisão ${d.slug}: falta o nome, o curto, a área ou a página`);
-  if (!['ativo', 'em-breve'].includes(d.estado)) erros.push(`divisão ${d.slug}: estado «${d.estado}» (ativo ou em-breve)`);
-  if (d.foto && !fotos[d.foto]) erros.push(`divisão ${d.slug}: a fotografia ${d.foto} não existe`);
-  if (!d.video && !d.foto && !d.icone) erros.push(`divisão ${d.slug}: sem vídeo, fotografia nem ícone para o cartão`);
-  if (d.video && !manifesto.videos[d.video]) erros.push(`divisão ${d.slug}: o vídeo ${d.video} não existe`);
-}
-for (const e of conteudo.espacos) if (!['limpeza', 'empresas'].includes(e.pagina)) erros.push(`espaço ${e.slug}: página «${e.pagina}»`);
+for (const d of conteudo.divisoes) if (d.video && !manifesto.videos[d.video]) erros.push(`divisão ${d.slug}: o vídeo ${d.video} não existe`);
 for (const f of ['horizontal', 'vertical']) if (!existsSync(join(RAIZ, 'media', 'intro', f + '.mp4'))) erros.push(`intro: falta media/intro/${f}.mp4`);
-if (!/^\d{3} \d{3} \d{3}$/.test(site.telefone)) erros.push(`site.json: telefone «${site.telefone}» (formato 9xx xxx xxx)`);
-if (erros.length) { console.error('O conteúdo tem problemas:\n- ' + erros.join('\n- ')); process.exit(1); }
+if (erros.length) { console.error('Só o Renato pode corrigir (não é do painel):\n- ' + erros.join('\n- ')); process.exit(1); }
 
 // ---- saída limpa ----
 rmSync(opcoes.saida, { recursive: true, force: true });
-for (const d of ['assets/img', 'assets/video', 'assets/fontes']) mkdirSync(join(opcoes.saida, d), { recursive: true });
+for (const d of ['assets/img', 'assets/video', 'assets/fontes', 'assets/fotos']) mkdirSync(join(opcoes.saida, d), { recursive: true });
 const resumo = (buf) => createHash('sha256').update(buf).digest('hex').slice(0, 10);
 
 // letras e ficheiros com resumo no nome (o GitHub Pages guarda 10 min em cache e não deixa mudar os cabeçalhos)
@@ -147,6 +150,14 @@ for (const f of usados) {
     if (!existsSync(origem)) throw new Error(`Falta na cache: ${f} (corre python3 scripts/imagens.py)`);
     copyFileSync(origem, join(opcoes.saida, 'assets', 'img', f)); nImg++;
   }
+}
+
+// ---- as fotografias para o painel: de todas as da biblioteca (usadas ou não), com o nome fixo que o painel procura ----
+// assets/fotos/miniatura-<nome>.webp (320 px, as listas) e grande-<nome>.webp (1200 px, a janela de cada fotografia).
+for (const [nome, v] of Object.entries(manifesto.painel)) {
+  if (!fotos[nome]) continue;
+  copyFileSync(join(CACHE, v.miniatura), join(opcoes.saida, 'assets', 'fotos', `miniatura-${nome}.webp`));
+  copyFileSync(join(CACHE, v.grande), join(opcoes.saida, 'assets', 'fotos', `grande-${nome}.webp`));
 }
 
 // ---- ícones, manifesto da app, robots, sitemap ----

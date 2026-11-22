@@ -1,85 +1,358 @@
 {
   "divisoes": [
-    { "slug": "cleaning", "nome": "NEVOA Cleaning", "curto": "Cleaning", "area": "Limpezas profissionais", "pagina": "/limpeza/", "estado": "ativo", "video": "vidros", "rotulo": "A equipa da NEVOA a limpar uma janela ao pôr do sol", "foco": 30 },
-    { "slug": "laundry", "nome": "NEVOA Laundry", "curto": "Laundry", "area": "Lavandaria e engomadoria", "pagina": "/lavandaria/", "estado": "em-breve", "foto": "loja-letreiro", "icone": "maquina" },
-    { "slug": "express", "nome": "NEVOA Express", "curto": "Express", "area": "Recolhas e entregas", "pagina": "/recolhas-e-entregas/", "estado": "em-breve", "foto": "marca-recolha", "icone": "carrinha" }
+    {
+      "slug": "cleaning",
+      "nome": "NEVOA Cleaning",
+      "curto": "Cleaning",
+      "area": "Limpezas profissionais",
+      "pagina": "/limpeza/",
+      "estado": "ativo",
+      "video": "vidros",
+      "rotulo": "A equipa da NEVOA a limpar uma janela ao pôr do sol",
+      "foco": 30
+    },
+    {
+      "slug": "laundry",
+      "nome": "NEVOA Laundry",
+      "curto": "Laundry",
+      "area": "Lavandaria e engomadoria",
+      "pagina": "/lavandaria/",
+      "estado": "em-breve",
+      "foto": "loja-letreiro",
+      "icone": "maquina"
+    },
+    {
+      "slug": "express",
+      "nome": "NEVOA Express",
+      "curto": "Express",
+      "area": "Recolhas e entregas",
+      "pagina": "/recolhas-e-entregas/",
+      "estado": "em-breve",
+      "foto": "marca-recolha",
+      "icone": "carrinha"
+    }
   ],
   "espacos": [
-    { "slug": "casas", "nome": "Casas", "icone": "casa", "linha": "Ambientes limpos e acolhedores, cuidados como se fossem nossos.", "pagina": "limpeza" },
-    { "slug": "escritorios", "nome": "Empresas e escritórios", "icone": "escritorio", "linha": "Espaços de trabalho mais limpos e mais produtivos.", "pagina": "empresas" },
-    { "slug": "industria", "nome": "Indústria e armazéns", "icone": "fabrica", "linha": "Pavilhões, armazéns e zonas de produção limpos e seguros.", "pagina": "empresas" },
-    { "slug": "coworking", "nome": "Espaços de coworking", "icone": "coworking", "linha": "Secretárias, salas e áreas comuns prontas para cada dia de trabalho.", "pagina": "empresas" },
-    { "slug": "centros-empresariais", "nome": "Centros empresariais", "icone": "torre", "linha": "Entradas, corredores e zonas comuns sempre à altura de quem lá trabalha.", "pagina": "empresas" },
-    { "slug": "comercio", "nome": "Lojas e comércio", "icone": "loja", "linha": "Uma montra limpa é a melhor receção aos seus clientes.", "pagina": "empresas" },
-    { "slug": "clinicas", "nome": "Clínicas e consultórios", "icone": "cruz", "linha": "Salas de espera, consultórios e casas de banho com a higiene que exigem.", "pagina": "empresas" },
-    { "slug": "ginasios", "nome": "Ginásios", "icone": "haltere", "linha": "Balneários, salas e áreas de treino sempre limpos.", "pagina": "empresas" },
-    { "slug": "condominios", "nome": "Condomínios", "icone": "predio", "linha": "Escadas, entradas e zonas comuns sempre impecáveis.", "pagina": "limpeza" },
-    { "slug": "hotelaria", "nome": "Unidades hoteleiras", "icone": "hotel", "linha": "Quartos, receção e áreas comuns impecáveis, hóspede após hóspede.", "pagina": "empresas" },
-    { "slug": "alojamento-local", "nome": "Alojamento local", "icone": "chave", "linha": "Limpeza entre estadias, com a excelência que os seus hóspedes notam.", "pagina": "limpeza" },
-    { "slug": "eventos", "nome": "Eventos", "icone": "taca", "linha": "Antes, durante e depois: nós tratamos da limpeza.", "pagina": "limpeza" }
+    {
+      "slug": "casas",
+      "nome": "Casas",
+      "icone": "casa",
+      "linha": "Ambientes limpos e acolhedores, cuidados como se fossem nossos.",
+      "empresas": false
+    },
+    {
+      "slug": "escritorios",
+      "nome": "Empresas e escritórios",
+      "icone": "escritorio",
+      "linha": "Espaços de trabalho mais limpos e mais produtivos.",
+      "empresas": true
+    },
+    {
+      "slug": "industria",
+      "nome": "Indústria e armazéns",
+      "icone": "fabrica",
+      "linha": "Pavilhões, armazéns e zonas de produção limpos e seguros.",
+      "empresas": true
+    },
+    {
+      "slug": "coworking",
+      "nome": "Espaços de coworking",
+      "icone": "coworking",
+      "linha": "Secretárias, salas e áreas comuns prontas para cada dia de trabalho.",
+      "empresas": true
+    },
+    {
+      "slug": "centros-empresariais",
+      "nome": "Centros empresariais",
+      "icone": "torre",
+      "linha": "Entradas, corredores e zonas comuns sempre à altura de quem lá trabalha.",
+      "empresas": true
+    },
+    {
+      "slug": "comercio",
+      "nome": "Lojas e comércio",
+      "icone": "loja",
+      "linha": "Uma montra limpa é a melhor receção aos seus clientes.",
+      "empresas": true
+    },
+    {
+      "slug": "clinicas",
+      "nome": "Clínicas e consultórios",
+      "icone": "cruz",
+      "linha": "Salas de espera, consultórios e casas de banho com a higiene que exigem.",
+      "empresas": true
+    },
+    {
+      "slug": "ginasios",
+      "nome": "Ginásios",
+      "icone": "haltere",
+      "linha": "Balneários, salas e áreas de treino sempre limpos.",
+      "empresas": true
+    },
+    {
+      "slug": "condominios",
+      "nome": "Condomínios",
+      "icone": "predio",
+      "linha": "Escadas, entradas e zonas comuns sempre impecáveis.",
+      "empresas": true
+    },
+    {
+      "slug": "hotelaria",
+      "nome": "Unidades hoteleiras",
+      "icone": "hotel",
+      "linha": "Quartos, receção e áreas comuns impecáveis, hóspede após hóspede.",
+      "empresas": true
+    },
+    {
+      "slug": "alojamento-local",
+      "nome": "Alojamento local",
+      "icone": "chave",
+      "linha": "Limpeza entre estadias, com a excelência que os seus hóspedes notam.",
+      "empresas": true
+    },
+    {
+      "slug": "eventos",
+      "nome": "Eventos",
+      "icone": "taca",
+      "linha": "Antes, durante e depois: nós tratamos da limpeza.",
+      "empresas": false
+    }
   ],
   "tiposLimpeza": [
-    { "nome": "Limpeza regular", "linha": "Manutenção semanal ou à medida, para o espaço estar sempre pronto." },
-    { "nome": "Limpeza profunda", "linha": "Tudo limpo a fundo, de cima a baixo." },
-    { "nome": "Limpeza pós-obra", "linha": "A limpeza que deixa a obra pronta a estrear." },
-    { "nome": "Vidros e superfícies envidraçadas", "linha": "Vidros, montras e caixilharias sem marcas." },
-    { "nome": "Higienização de espaços", "linha": "Para quem precisa de um espaço tratado ao pormenor." },
-    { "nome": "Cozinhas e casas de banho", "linha": "Bancadas, azulejos e loiças sem gordura nem calcário." },
-    { "nome": "Zonas comuns", "linha": "Escadas, entradas, copas e espaços partilhados." },
-    { "nome": "Serviços especializados", "linha": "Para o que não está nesta lista: fale connosco." }
+    {
+      "nome": "Limpeza regular",
+      "linha": "Manutenção semanal ou à medida, para o espaço estar sempre pronto."
+    },
+    {
+      "nome": "Limpeza profunda",
+      "linha": "Tudo limpo a fundo, de cima a baixo."
+    },
+    {
+      "nome": "Limpeza pós-obra",
+      "linha": "A limpeza que deixa a obra pronta a estrear."
+    },
+    {
+      "nome": "Vidros e superfícies envidraçadas",
+      "linha": "Vidros, montras e caixilharias sem marcas."
+    },
+    {
+      "nome": "Higienização de espaços",
+      "linha": "Para quem precisa de um espaço tratado ao pormenor."
+    },
+    {
+      "nome": "Cozinhas e casas de banho",
+      "linha": "Bancadas, azulejos e loiças sem gordura nem calcário."
+    },
+    {
+      "nome": "Zonas comuns",
+      "linha": "Escadas, entradas, copas e espaços partilhados."
+    },
+    {
+      "nome": "Serviços especializados",
+      "linha": "Para o que não está nesta lista: fale connosco."
+    }
   ],
   "compromisso": "Qualidade, profissionalismo, rigor e flexibilidade, com um acompanhamento próximo e soluções ajustadas a cada espaço.",
   "pilares": [
-    { "icone": "lupa", "nome": "Qualidade", "linha": "Produtos profissionais e cada serviço acompanhado até ao fim." },
-    { "icone": "pessoas", "nome": "Profissionalismo", "linha": "Uma equipa com formação, pontual e discreta." },
-    { "icone": "escudo", "nome": "Rigor", "linha": "Nenhum detalhe fica ao acaso." },
-    { "icone": "plano", "nome": "Flexibilidade", "linha": "Planos e horários à medida de cada espaço." }
+    {
+      "icone": "lupa",
+      "nome": "Qualidade",
+      "linha": "Produtos profissionais e cada serviço acompanhado até ao fim."
+    },
+    {
+      "icone": "pessoas",
+      "nome": "Profissionalismo",
+      "linha": "Uma equipa com formação, pontual e discreta."
+    },
+    {
+      "icone": "escudo",
+      "nome": "Rigor",
+      "linha": "Nenhum detalhe fica ao acaso."
+    },
+    {
+      "icone": "plano",
+      "nome": "Flexibilidade",
+      "linha": "Planos e horários à medida de cada espaço."
+    }
   ],
   "porque": [
-    { "icone": "frasco", "nome": "Produtos profissionais", "linha": "Resultados melhores e espaços mais saudáveis." },
-    { "icone": "pessoas", "nome": "Equipa de confiança", "linha": "Profissionais com formação, discretos e cuidadosos." },
-    { "icone": "plano", "nome": "Plano à sua medida", "linha": "Serviços e horários pensados para o seu espaço." },
-    { "icone": "relogio", "nome": "Pontualidade", "linha": "Cumprimos horários. Respeitamos o seu tempo." },
-    { "icone": "lupa", "nome": "Controlo de qualidade", "linha": "Acompanhamos cada serviço até ao último detalhe." },
-    { "icone": "escudo", "nome": "Discrição", "linha": "Respeitamos o seu espaço, a sua privacidade e as suas regras." }
+    {
+      "icone": "frasco",
+      "nome": "Produtos profissionais",
+      "linha": "Resultados melhores e espaços mais saudáveis."
+    },
+    {
+      "icone": "pessoas",
+      "nome": "Equipa de confiança",
+      "linha": "Profissionais com formação, discretos e cuidadosos."
+    },
+    {
+      "icone": "plano",
+      "nome": "Plano à sua medida",
+      "linha": "Serviços e horários pensados para o seu espaço."
+    },
+    {
+      "icone": "relogio",
+      "nome": "Pontualidade",
+      "linha": "Cumprimos horários. Respeitamos o seu tempo."
+    },
+    {
+      "icone": "lupa",
+      "nome": "Controlo de qualidade",
+      "linha": "Acompanhamos cada serviço até ao último detalhe."
+    },
+    {
+      "icone": "escudo",
+      "nome": "Discrição",
+      "linha": "Respeitamos o seu espaço, a sua privacidade e as suas regras."
+    }
   ],
   "passosEmpresas": [
-    { "nome": "Avaliação inicial", "linha": "Visitamos o seu espaço e percebemos o que precisa." },
-    { "nome": "Plano à medida", "linha": "Definimos os serviços, as frequências e os produtos certos para o seu negócio." },
-    { "nome": "Equipa de confiança", "linha": "Profissionais com formação e experiência em ambientes empresariais." },
-    { "nome": "Horários adaptados", "linha": "Trabalhamos nas horas que melhor servem a sua operação." },
-    { "nome": "Acompanhamento", "linha": "Supervisão regular e contacto próximo, para garantir a sua satisfação." }
+    {
+      "nome": "Avaliação inicial",
+      "linha": "Visitamos o seu espaço e percebemos o que precisa."
+    },
+    {
+      "nome": "Plano à medida",
+      "linha": "Definimos os serviços, as frequências e os produtos certos para o seu negócio."
+    },
+    {
+      "nome": "Equipa de confiança",
+      "linha": "Profissionais com formação e experiência em ambientes empresariais."
+    },
+    {
+      "nome": "Horários adaptados",
+      "linha": "Trabalhamos nas horas que melhor servem a sua operação."
+    },
+    {
+      "nome": "Acompanhamento",
+      "linha": "Supervisão regular e contacto próximo, para garantir a sua satisfação."
+    }
   ],
   "roupa": [
-    { "icone": "camisa", "nome": "Vestuário", "linha": "Roupa do dia a dia, de trabalho e peças delicadas." },
-    { "icone": "cama", "nome": "Roupa de casa", "linha": "Lençóis, capas de edredão, fronhas e toalhas." },
-    { "icone": "edredao", "nome": "Edredões e cobertores", "linha": "Limpeza a fundo, peça a peça." },
-    { "icone": "farda", "nome": "Roupa profissional", "linha": "Fardas, batas e vestuário de trabalho." },
-    { "icone": "ferro", "nome": "Engomadoria", "linha": "Camisas, calças, vestidos e roupa de casa." },
-    { "icone": "texteis", "nome": "Outros têxteis", "linha": "Cortinados, capas, mantas e muito mais." },
-    { "icone": "sapato", "nome": "Calçado e acessórios", "linha": "Limpeza especializada." },
-    { "icone": "hotel", "nome": "Têxteis de alojamento e hotelaria", "linha": "Para quem recebe hóspedes e precisa de tudo impecável." }
+    {
+      "icone": "camisa",
+      "nome": "Vestuário",
+      "linha": "Roupa do dia a dia, de trabalho e peças delicadas."
+    },
+    {
+      "icone": "cama",
+      "nome": "Roupa de casa",
+      "linha": "Lençóis, capas de edredão, fronhas e toalhas."
+    },
+    {
+      "icone": "edredao",
+      "nome": "Edredões e cobertores",
+      "linha": "Limpeza a fundo, peça a peça."
+    },
+    {
+      "icone": "farda",
+      "nome": "Roupa profissional",
+      "linha": "Fardas, batas e vestuário de trabalho."
+    },
+    {
+      "icone": "ferro",
+      "nome": "Engomadoria",
+      "linha": "Camisas, calças, vestidos e roupa de casa."
+    },
+    {
+      "icone": "texteis",
+      "nome": "Outros têxteis",
+      "linha": "Cortinados, capas, mantas e muito mais."
+    },
+    {
+      "icone": "sapato",
+      "nome": "Calçado e acessórios",
+      "linha": "Limpeza especializada."
+    },
+    {
+      "icone": "hotel",
+      "nome": "Têxteis de alojamento e hotelaria",
+      "linha": "Para quem recebe hóspedes e precisa de tudo impecável."
+    }
   ],
   "passosLavandaria": [
-    { "nome": "Entregue ou agende", "linha": "Traga as suas peças à loja, ou marque a recolha em casa." },
-    { "nome": "Lavamos", "linha": "Com produtos de qualidade e o tratamento certo para cada tecido." },
-    { "nome": "Secamos", "linha": "Com todo o cuidado e no tempo certo." },
-    { "nome": "Engomamos", "linha": "Acabamento profissional, pronto a usar." },
-    { "nome": "Entregamos", "linha": "Levantamento na loja, ou entrega em sua casa." }
+    {
+      "nome": "Entregue ou agende",
+      "linha": "Traga as suas peças à loja, ou marque a recolha em casa."
+    },
+    {
+      "nome": "Lavamos",
+      "linha": "Com produtos de qualidade e o tratamento certo para cada tecido."
+    },
+    {
+      "nome": "Secamos",
+      "linha": "Com todo o cuidado e no tempo certo."
+    },
+    {
+      "nome": "Engomamos",
+      "linha": "Acabamento profissional, pronto a usar."
+    },
+    {
+      "nome": "Entregamos",
+      "linha": "Levantamento na loja, ou entrega em sua casa."
+    }
   ],
   "passosExpress": [
-    { "nome": "Agende", "linha": "Escolha o dia e a hora mais convenientes." },
-    { "nome": "Recolhemos", "linha": "Passamos pela morada combinada, à hora marcada." },
-    { "nome": "Cuidamos", "linha": "Lavagem, secagem e engomadoria com a máxima atenção." },
-    { "nome": "Entregamos", "linha": "No seu domicílio, pronto a usar." }
+    {
+      "nome": "Agende",
+      "linha": "Escolha o dia e a hora mais convenientes."
+    },
+    {
+      "nome": "Recolhemos",
+      "linha": "Passamos pela morada combinada, à hora marcada."
+    },
+    {
+      "nome": "Cuidamos",
+      "linha": "Lavagem, secagem e engomadoria com a máxima atenção."
+    },
+    {
+      "nome": "Entregamos",
+      "linha": "No seu domicílio, pronto a usar."
+    }
   ],
   "antesDepois": [
-    { "slug": "cozinha", "nome": "Cozinha" },
-    { "slug": "casa-de-banho", "nome": "Casa de banho" },
-    { "slug": "escada", "nome": "Escada" },
-    { "slug": "quarto", "nome": "Sala" },
-    { "slug": "duche", "nome": "Duche" },
-    { "slug": "lavatorio", "nome": "Lavatório" },
-    { "slug": "janela", "nome": "Quarto" }
+    {
+      "slug": "cozinha",
+      "nome": "Cozinha",
+      "antes": "posobra-cozinha-antes",
+      "depois": "posobra-cozinha-depois"
+    },
+    {
+      "slug": "casa-de-banho",
+      "nome": "Casa de banho",
+      "antes": "posobra-casa-de-banho-antes",
+      "depois": "posobra-casa-de-banho-depois"
+    },
+    {
+      "slug": "escada",
+      "nome": "Escada",
+      "antes": "posobra-escada-antes",
+      "depois": "posobra-escada-depois"
+    },
+    {
+      "slug": "quarto",
+      "nome": "Sala",
+      "antes": "posobra-quarto-antes",
+      "depois": "posobra-quarto-depois"
+    },
+    {
+      "slug": "duche",
+      "nome": "Duche",
+      "antes": "posobra-duche-antes",
+      "depois": "posobra-duche-depois"
+    },
+    {
+      "slug": "lavatorio",
+      "nome": "Lavatório",
+      "antes": "posobra-lavatorio-antes",
+      "depois": "posobra-lavatorio-depois"
+    },
+    {
+      "slug": "janela",
+      "nome": "Quarto",
+      "antes": "posobra-janela-antes",
+      "depois": "posobra-janela-depois"
+    }
   ]
 }
