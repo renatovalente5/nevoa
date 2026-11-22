@@ -132,11 +132,12 @@ export const ancoraReservada = (s) => ANCORAS_RESERVADAS.includes(s) || RE_ANCOR
 
 /** O endereço de um cartão ou de um par novo, a partir do nome, sem repetir os que já há (nem as âncoras das páginas). */
 export function gerarSlug(nome, existentes = [], vazio_ = 'cartao') {
-  const base = String(nome ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  let base = String(nome ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50).replace(/-+$/g, '') || vazio_;
   const usados = new Set(existentes);
   const livre = (s) => !usados.has(s) && !ancoraReservada(s);
   if (livre(base)) return base;
+  if (RE_ANCORA_RESERVADA.test(`${base}-`)) { base = `${vazio_}-${base}`.slice(0, 50).replace(/-+$/g, ''); if (livre(base)) return base; }
   for (let i = 2; ; i++) if (livre(`${base}-${i}`)) return `${base}-${i}`;
 }
 
@@ -345,7 +346,7 @@ function regrasServicos(c, { add, fotoExiste }) {
     for (const slug of DIVISOES) if (!c.divisoes.some((d) => d?.slug === slug)) P('bloqueia', `divisao:${slug}`, `Falta a divisão «${slug}».`);
     c.divisoes.forEach((d, i) => {
       if (!eObjecto(d)) return P('bloqueia', `divisoes.${i}`, 'Uma das divisões não se lê.');
-      const nome = texto(d.nome) || String(d.slug);
+      const nome = texto(d.nome) || texto(d.slug) || 'divisão sem nome';
       if (vazio(d.nome) || vazio(d.curto) || !/^\/[a-z-]+\/$/.test(d.pagina || '')) P('bloqueia', `divisao:${d.slug}:forma`, `A divisão «${nome}» não tem o nome, o nome curto ou a página.`);
       if (vazio(d.area)) P('bloqueia', `divisao:${d.slug}:area`, `Escreva o que faz a ${nome}.`, { campo: `divisoes.${i}.area` });
       else if (texto(d.area).length > TAMANHOS.area) P('avisa', `divisao:${d.slug}:area-longa`, `Tem ${texto(d.area).length} letras: o máximo é ${TAMANHOS.area}.`, { campo: `divisoes.${i}.area` });
