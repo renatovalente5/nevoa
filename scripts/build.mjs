@@ -179,8 +179,11 @@ if (opcoes.producao) {
   // ficheiro para todas, por isso a data é a mesma em todas), nunca o relógio do build. Numa clonagem rasa sairia a
   // data do último commit, fosse ele qual fosse: no CI o checkout traz o histórico todo (fetch-depth: 0).
   const git = (...a) => execFileSync('git', a, { cwd: RAIZ, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-  if (git('rev-parse', '--is-shallow-repository') === 'true') throw new Error('histórico raso: as datas do mapa do site sairiam erradas (fetch-depth: 0 no checkout)');
-  const data = git('log', '-1', '--format=%cI', '--', 'content', 'src', 'media', 'legal-comum', 'scripts/build.mjs', 'scripts/imagens.py');
+  // Uma cópia que não é um repositório (o ensaio local do painel, ~/Websites/nevoa-painel, corre este workflow numa
+  // cópia do commit, sem o .git) leva a data de agora; no GitHub o checkout é sempre um repositório.
+  const semGit = !existsSync(join(RAIZ, '.git'));
+  if (!semGit && git('rev-parse', '--is-shallow-repository') === 'true') throw new Error('histórico raso: as datas do mapa do site sairiam erradas (fetch-depth: 0 no checkout)');
+  const data = semGit ? new Date().toISOString().replace(/\.\d{3}Z$/, 'Z') : git('log', '-1', '--format=%cI', '--', 'content', 'src', 'media', 'legal-comum', 'scripts/build.mjs', 'scripts/imagens.py');
   if (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d([+-]\d\d:\d\d|Z)$/.test(data)) throw new Error(`a data do git para o mapa do site saiu «${data}»`);
   writeFileSync(join(opcoes.saida, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${opcoes.url}/sitemap.xml\n`);
   writeFileSync(join(opcoes.saida, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${indexaveis.map((p) => `  <url><loc>${p.abs}</loc><lastmod>${data}</lastmod></url>`).join('\n')}\n</urlset>\n`);
