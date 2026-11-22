@@ -60,7 +60,8 @@ const negocio = (ctx) => {
     hasMap: site.mapa,
     areaServed: site.zona.areas.map((r) => ({ '@type': 'AdministrativeArea', name: r })),
     openingHoursSpecification: horarioSchema(site.horario.schema),
-    sameAs: [`https://www.instagram.com/${site.instagram}/`],
+    // as redes da NEVOA (o Facebook só aqui, para o Google ligar a página ao negócio; no rodapé fica o Instagram)
+    sameAs: [`https://www.instagram.com/${site.instagram}/`, site.facebook].filter(Boolean),
     department: ctx.conteudo.divisoes.map((d) => ({ '@type': 'Organization', name: d.nome, description: d.area, url: ctx.absPagina(d.pagina) })),
     knowsAbout: ['Limpeza profissional', 'Limpeza de casas', 'Limpeza de escritórios', 'Limpeza de espaços de coworking', 'Limpeza de centros empresariais', 'Limpeza de unidades hoteleiras', 'Limpeza pós-obra', 'Limpeza de condomínios', 'Limpeza de alojamento local', 'Lavandaria', 'Engomadoria', 'Recolhas e entregas'],
   };
