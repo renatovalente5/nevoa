@@ -1,10 +1,17 @@
 // NEVOA — a névoa dourada da capa (proposta A). WebGL, a meia resolução, só enquanto se vê; com «reduzir
 // movimento» desenha um fotograma parado. Sem WebGL fica o fundo do CSS (os brilhos em gradiente).
+// Sem placa gráfica (o WebGL feito pelo processador: SwiftShader, llvmpipe… em máquinas virtuais, no Chrome sem
+// aceleração e no teste do PageSpeed) cada fotograma prendia a página ~100 ms: aí também fica o fundo do CSS. E se,
+// mesmo com placa, a névoa não aguentar 10 fotogramas por segundo, pára no fotograma em que está.
 (() => {
   const tela = document.querySelector('[data-nevoa]');
   if (!tela) return;
-  const gl = tela.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false, powerPreference: 'low-power' });
+  const gl = tela.getContext('webgl', { antialias: false, alpha: false, premultipliedAlpha: false, powerPreference: 'low-power', failIfMajorPerformanceCaveat: true });
   if (!gl) return;
+  // o nome da placa: o Chrome e o Safari dizem «WebKit WebGL» e dão o verdadeiro pela extensão; o Firefox dá-o logo
+  let placa = String(gl.getParameter(gl.RENDERER) || '');
+  if (/^WebKit WebGL$/i.test(placa)) { const d = gl.getExtension('WEBGL_debug_renderer_info'); if (d) placa = String(gl.getParameter(d.UNMASKED_RENDERER_WEBGL) || ''); }
+  if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(placa)) return;
 
   const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
   const FRAG = `precision mediump float;
@@ -59,7 +66,7 @@ void main(){
 
   const reduzir = matchMedia('(prefers-reduced-motion: reduce)');
   const t0 = performance.now() - 40000 * Math.random();
-  let visivel = true, id = 0, ultimo = 0;
+  let visivel = true, id = 0, ultimo = 0, inicio = 0, medidos = 0, lentos = 0, parada = false;
   const desenhar = (agora) => {
     medir();
     rato.ax += (rato.x - rato.ax) * 0.03; rato.ay += (rato.y - rato.ay) * 0.03;
@@ -70,11 +77,19 @@ void main(){
   };
   const ciclo = (agora) => {
     id = 0;
-    if (!visivel || document.hidden || reduzir.matches) return;
-    if (agora - ultimo > 33) { ultimo = agora; desenhar(agora); }   // ~30 fotogramas por segundo chegam
+    if (parada || !visivel || document.hidden || reduzir.matches) return;
+    if (agora - ultimo > 33) {                                     // ~30 fotogramas por segundo chegam
+      // a guarda: passados os 2 primeiros segundos (o arranque da página), mede 20 fotogramas seguidos; se 15 levarem
+      // mais de 100 ms (menos de 10 por segundo), a névoa fica parada. As pausas (capa fora do ecrã, separador
+      // escondido) não contam.
+      if (!inicio) inicio = agora;
+      if (ultimo && agora - ultimo < 1000 && agora - inicio > 2000 && medidos < 20) { medidos++; if (agora - ultimo > 100) lentos++; }
+      if (lentos >= 15) { parada = true; return; }
+      ultimo = agora; desenhar(agora);
+    }
     id = requestAnimationFrame(ciclo);
   };
-  const arrancar = () => { if (!id && visivel && !document.hidden && !reduzir.matches) id = requestAnimationFrame(ciclo); };
+  const arrancar = () => { if (!parada && !id && visivel && !document.hidden && !reduzir.matches) id = requestAnimationFrame(ciclo); };
   desenhar(performance.now());
   requestAnimationFrame(() => tela.classList.add('pronta'));
   if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { visivel = e.isIntersecting; arrancar(); }).observe(tela);
