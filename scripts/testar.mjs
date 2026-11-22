@@ -147,7 +147,9 @@ for (const d of C.divisoes) {
   if (d.slug !== 'cleaning') prova(/em breve/i.test(desc) === breve, `${d.pagina}: a descrição ${breve ? 'devia' : 'não devia'} dizer «em breve»`);
 }
 const lav = C.divisoes.find((d) => d.slug === 'laundry').estado === 'ativo';
-prova(/Em breve, lavandaria/.test(inicio) === !lav, `início: a frase da capa ${lav ? 'ainda diz' : 'já não diz'} que a lavandaria abre em breve`);
+// só a frase da capa: a descrição para o Google é texto do João (o painel lembra-o, se ficar a dizer «em breve»)
+const fraseDaCapa = (inicio.match(/<p class="capa__frase">([\s\S]*?)<\/p>/) || [])[1] ?? '';
+prova(fraseDaCapa && /Em breve, lavandaria/.test(fraseDaCapa) === !lav, `início: a frase da capa ${lav ? 'ainda diz' : 'já não diz'} que a lavandaria abre em breve`);
 prova(/name="servico" value="Recolhas e entregas"/.test(ler('contactos/index.html')), 'contactos: o pedido não tem as recolhas e entregas');
 // produção (nevoagroup.pt): indexável, com robots e sitemap; as legais e o 404 com noindex e fora do sitemap
 if (process.argv.includes('--producao')) {

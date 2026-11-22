@@ -31,6 +31,9 @@ const VARIANTES = [
     site.zona = { ...site.zona, titulo: 'No Norte inteiro', frase: 'Trabalhamos em todo o Norte, com a sede em Felgueiras.', curto: 'Todo o Norte', areas: ['Região Norte, Portugal'] };
     site.descricao = 'Limpezas profissionais, lavandaria e engomadoria em Felgueiras e em todo o Norte, com recolha e entrega ao domicílio.';
   }],
+  ['a lavandaria aberta, e a descrição para o Google ainda a dizer «em breve» (o lembrete do painel)', (site, serv) => {
+    serv.divisoes.find((d) => d.slug === 'laundry').estado = 'ativo';
+  }],
   ['listas e fotografias mexidas', (site, serv) => {
     serv.espacos = serv.espacos.filter((e) => e.slug !== 'coworking');
     serv.espacos.splice(2, 0, { slug: gerarSlug('Escolas e creches', serv.espacos.map((e) => e.slug)), nome: 'Escolas e creches', icone: 'predio', linha: 'Salas, refeitórios e recreios limpos todos os dias.', empresas: true });
