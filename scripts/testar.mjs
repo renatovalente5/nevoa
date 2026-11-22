@@ -102,8 +102,11 @@ for (const e of C.espacos) {
 // as outras listas, cada uma na sua página, pela ordem do conteúdo
 for (const [lista, pagina] of [['tiposLimpeza', 'limpeza'], ['porque', 'limpeza'], ['passosEmpresas', 'empresas'], ['roupa', 'lavandaria'], ['passosLavandaria', 'lavandaria'], ['passosExpress', 'recolhas-e-entregas'], ['pilares', 'a-nevoa']]) {
   const html = plano(ler(`${pagina}/index.html`));
-  const lugares = C[lista].map((x) => html.indexOf(escHtml(x.nome).replace(/[\s\u00A0]+/g, ' ')));
-  prova(lugares.every((l) => l >= 0) && lugares.every((l, i) => !i || l > lugares[i - 1]), `${pagina}: a lista «${R.LISTAS[lista].nome}» não está toda, pela ordem`);
+  /* Cada nome procura-se DEPOIS do anterior: dois cartões com o mesmo nome (o João pode repeti-lo) não
+     se confundem, e um que falte ou fora de ordem não se encontra. */
+  let desde = 0;
+  const lugares = C[lista].map((x) => { const i = html.indexOf(escHtml(x.nome).replace(/[\s\u00A0]+/g, ' '), desde); if (i >= 0) desde = i + 1; return i; });
+  prova(lugares.every((l) => l >= 0), `${pagina}: a lista «${R.LISTAS[lista].nome}» não está toda, pela ordem`);
   prova(C[lista].every((x) => html.includes(escHtml(x.linha).replace(/[\s\u00A0]+/g, ' '))), `${pagina}: faltam frases de «${R.LISTAS[lista].nome}»`);
 }
 // a zona, a morada, o horário e a firma, como estão no content/

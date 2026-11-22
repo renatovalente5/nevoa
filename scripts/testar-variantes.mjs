@@ -39,6 +39,8 @@ const VARIANTES = [
     serv.espacos.splice(2, 0, { slug: gerarSlug('Escolas e creches', serv.espacos.map((e) => e.slug)), nome: 'Escolas e creches', icone: 'predio', linha: 'Salas, refeitórios e recreios limpos todos os dias.', empresas: true });
     serv.espacos.push({ slug: gerarSlug('Porque', serv.espacos.map((e) => e.slug)), nome: 'Porque', icone: 'casa', linha: 'Um espaço cujo endereço seria uma âncora da página.', empresas: false });
     serv.porque.reverse();
+    /* Um cartão com o nome de outro da mesma lista (as regras deixam; o teste do site não se pode confundir). */
+    serv.porque.push({ icone: 'torre', nome: serv.porque[0].nome, linha: 'Um segundo cartão com o mesmo nome do primeiro.' });
     serv.tiposLimpeza.push({ nome: 'Limpeza de estofos', linha: 'Sofás, cadeiras e colchões limpos a fundo.' });
     serv.roupa = serv.roupa.slice(0, 3);
     serv.antesDepois = serv.antesDepois.filter((p) => !['cozinha', 'duche'].includes(p.slug)).reverse();
