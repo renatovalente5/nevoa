@@ -1,5 +1,5 @@
 // A moldura de todas as páginas: <head>, cabeçalho, menu, rodapé e (na pré-visualização) a barra das propostas.
-import { esc, marca, icone, jsonLd, whatsappHref } from './util.mjs';
+import { esc, marca, marcaFontes, icone, jsonLd, whatsappHref } from './util.mjs';
 import { livroReclamacoes, telefoneHtml } from '../../legal-comum/index.mjs';
 
 export const VARIANTES = {
@@ -16,19 +16,28 @@ const nav = (ctx) => [
   ['contactos', '/contactos/', 'Contactos'],
 ];
 
-// A intro (os vídeos do logótipo que a NEVOA mandou): só na página inicial, na primeira página de cada visita,
-// sem som, com «Saltar»; nunca com «reduzir movimento», poupança de dados ou um endereço com #.
+// A intro: o logótipo verdadeiro da NEVOA (media/marca/completo.png, recortado dos originais do João, nunca
+// redesenhado) a sair da névoa dourada, em HTML e CSS, nítido em qualquer ecrã (24 nov 2026; antes eram os vídeos de
+// 720p que a NEVOA mandou, desfocados no computador). Só na página inicial, na primeira página de cada visita, com
+// «Saltar»; nunca com «reduzir movimento», poupança de dados ou um endereço com #.
 // No <head>: decide antes de pintar (sem a capa a aparecer e a desaparecer) e marca a visita em todas as páginas.
 const introCabeca = (comIntro) => `<script>(function(i){var h=document.documentElement;h.classList.add('js');try{var s=sessionStorage,v=s.getItem('nevoa-visita');s.setItem('nevoa-visita','1');if(i&&!v&&!location.hash&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!(navigator.connection&&navigator.connection.saveData))h.classList.add('com-intro')}catch(e){}})(${comIntro ? 1 : 0})</script>`;
-// No <body>: o vídeo ao alto no telemóvel, deitado no computador; acaba sozinho, com um clique, Esc ou a roda do rato;
-// se não começar a tocar em 3,5 s (rede lenta, poupança de energia do iPhone), entra-se logo no site.
+// No <body>: quatro cópias da mesma imagem, cortadas (o emblema, o NEVOA, a linha do PREMIUM SERVICES) e uma mais clara
+// para o brilho; o CSS anima-as (.intro.a-correr). As imagens só se pedem quando a intro vai aparecer (data-srcset →
+// srcset); se o logótipo não chegar em 2,5 s (rede lenta), entra-se logo no site. Acaba sozinha (~4,3 s), com um
+// clique, Esc ou a roda do rato.
+const INTRO_TAMANHO = '(orientation: portrait) 64vw, 452px';
 function introCorpo(ctx) {
-  const { assets } = ctx;
-  return `<div class="intro" data-intro data-horizontal="${ctx.asset('/assets/video/' + assets.intro.horizontal)}" data-vertical="${ctx.asset('/assets/video/' + assets.intro.vertical)}">
-  <video muted playsinline disablepictureinpicture preload="auto" aria-hidden="true"></video>
+  const f = marcaFontes(ctx, 'completo', [240, 320, 480, 556, 640, 823]);
+  const peca = (tipo) => `<picture class="intro__peca intro__peca--${tipo}"><source type="image/webp" data-srcset="${f.srcset}" sizes="${INTRO_TAMANHO}"><img data-src="${f.src}" width="${f.w}" height="${f.h}" alt=""></picture>`;
+  return `<div class="intro" data-intro>
+  <div class="intro__palco" aria-hidden="true">
+    <div class="intro__nevoa intro__nevoa--1"></div><div class="intro__nevoa intro__nevoa--2"></div><div class="intro__nevoa intro__nevoa--3"></div>
+    <div class="intro__logo">${['emblema', 'nome', 'linha', 'brilho'].map(peca).join('')}</div>
+  </div>
   <button class="intro__saltar" type="button">Saltar</button>
 </div>
-<script>(function(){var h=document.documentElement,c=document.querySelector('[data-intro]');if(!h.classList.contains('com-intro')){c.remove();return}var v=c.querySelector('video'),feito=false,t;function fim(){if(feito)return;feito=true;clearTimeout(t);h.classList.add('intro-feita');c.classList.add('a-sair');setTimeout(function(){c.remove();h.classList.remove('com-intro','intro-feita')},750)}v.muted=true;v.src=matchMedia('(orientation: portrait)').matches?c.dataset.vertical:c.dataset.horizontal;t=setTimeout(fim,3500);v.addEventListener('playing',function(){clearTimeout(t);t=setTimeout(fim,((v.duration||5)+1)*1000)},{once:true});v.addEventListener('timeupdate',function(){if(v.duration&&v.currentTime>=v.duration-.7)fim()});v.addEventListener('ended',fim);v.addEventListener('error',fim);c.addEventListener('click',fim);addEventListener('keydown',function(e){if(e.key==='Escape')fim()});addEventListener('wheel',fim,{passive:true,once:true});var p=v.play();if(p&&p.catch)p.catch(fim)})()</script>`;
+<script>(function(){var h=document.documentElement,c=document.querySelector('[data-intro]');if(!h.classList.contains('com-intro')){c.remove();return}var feito=false,t,i,s=c.querySelectorAll('[data-srcset]'),m=c.querySelectorAll('img');function fim(){if(feito)return;feito=true;clearTimeout(t);h.classList.add('intro-feita');c.classList.add('a-sair');setTimeout(function(){c.remove();h.classList.remove('com-intro','intro-feita')},750)}function comecar(){if(feito||c.classList.contains('a-correr'))return;clearTimeout(t);c.classList.add('a-correr');t=setTimeout(fim,4300)}function pronta(){var d=m[0].decode?m[0].decode():null;if(d)d.then(comecar,comecar);else comecar()}for(i=0;i<s.length;i++)s[i].srcset=s[i].dataset.srcset;for(i=0;i<m.length;i++)m[i].src=m[i].dataset.src;t=setTimeout(fim,2500);if(m[0].complete&&m[0].naturalWidth)pronta();else{m[0].addEventListener('load',pronta,{once:true});m[0].addEventListener('error',fim,{once:true})}c.addEventListener('click',fim);addEventListener('keydown',function(e){if(e.key==='Escape')fim()});addEventListener('wheel',fim,{passive:true,once:true})})()</script>`;
 }
 
 export function pagina(ctx, p) {
@@ -47,7 +56,7 @@ export function pagina(ctx, p) {
   const wa = whatsappHref(site.whatsapp, 'Olá! Gostava de pedir um orçamento à NEVOA.');
   const logo = escuro ? 'palavra' : 'palavra-escuro';
   const scripts = [assets.js, ...(p.scripts || []).map((s) => assets[s])];
-  const comIntro = Boolean(p.intro && assets.intro);
+  const comIntro = Boolean(p.intro);
   const NAV = nav(ctx);
 
   return `<!doctype html>

@@ -577,12 +577,43 @@ html[data-tema="claro"] body:not(.inicio) main::before { display: none; }
 @media (max-width: 420px) { .propostas { font-size: 12.5px; } .propostas__titulo { display: none; } .propostas a { min-height: 32px; padding: 0 9px; } }
 body:has(.propostas) .rodape { padding-bottom: 64px; }
 
-/* ---------- a intro: os vídeos do logótipo da NEVOA, por cima de tudo, na primeira página de cada visita ---------- */
+/* ---------- a intro: o logótipo verdadeiro da NEVOA a sair da névoa dourada, por cima de tudo, na primeira página de
+   cada visita. Em HTML e CSS, nítido em qualquer ecrã; ~4,3 s e depois desvanece (.a-sair). ---------- */
 .intro { display: none; }
 html.com-intro .intro { position: fixed; inset: 0; z-index: 200; display: block; background: #0B0A08; transition: opacity .7s ease; }
 html.com-intro:not(.intro-feita) { overflow: hidden; }
-.intro video { width: 100%; height: 100%; object-fit: cover; }
 .intro.a-sair { opacity: 0; pointer-events: none; }
+.intro__palco { position: absolute; inset: 0; display: grid; place-items: center; overflow: hidden; }
+/* a névoa: manchas de âmbar e ouro (as cores da névoa da capa) que entram pelos cantos e derivam devagar; o centro fica
+   escuro, para o dourado do logótipo sobressair como no original (dourado sobre preto) */
+.intro__nevoa { position: absolute; left: 50%; top: 50%; border-radius: 50%; opacity: 0; pointer-events: none; will-change: transform, opacity; }
+.intro__nevoa--1 { width: 120vmax; height: 85vmax; margin: -42.5vmax 0 0 -60vmax; background: radial-gradient(closest-side, rgba(125, 84, 33, .34), rgba(125, 84, 33, .11) 55%, transparent); animation: intro-nevoa-1 5.4s cubic-bezier(.3, .6, .3, 1) forwards; }
+.intro__nevoa--2 { width: 90vmax; height: 60vmax; margin: -30vmax 0 0 -45vmax; background: radial-gradient(closest-side, rgba(222, 179, 112, .15), rgba(125, 84, 33, .09) 60%, transparent); animation: intro-nevoa-2 5.4s cubic-bezier(.3, .6, .3, 1) .1s forwards; }
+.intro__nevoa--3 { width: 60vmax; height: 42vmax; margin: -21vmax 0 0 -30vmax; background: radial-gradient(closest-side, rgba(222, 179, 112, .07), transparent); animation: intro-nevoa-3 4.8s ease .25s forwards; }
+@keyframes intro-nevoa-1 { 0% { opacity: 0; transform: translate(-30vmax, -18vmax) scale(.8); } 40% { opacity: 1; } 100% { opacity: .8; transform: translate(-17vmax, -9vmax) scale(1.05); } }
+@keyframes intro-nevoa-2 { 0% { opacity: 0; transform: translate(32vmax, 20vmax) scale(.85); } 45% { opacity: 1; } 100% { opacity: .75; transform: translate(19vmax, 11vmax) scale(1.1); } }
+@keyframes intro-nevoa-3 { 0% { opacity: 0; transform: scale(.55); } 50% { opacity: 1; } 100% { opacity: .55; transform: scale(1.15); } }
+/* o logótipo: a mesma imagem quatro vezes; os cortes seguem as filas vazias do desenho (completo.png, 1162 × 823:
+   o emblema até à fila 464, o NEVOA de 520 a 710, a linha de 776 a 813) */
+.intro__logo { position: relative; width: min(64vw, 67vh, 452px); aspect-ratio: 1162 / 823; }
+.intro__logo::before { content: ''; position: absolute; left: 47.9%; top: 28.7%; width: 150%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; background: radial-gradient(closest-side, rgba(222, 179, 112, .1), rgba(125, 84, 33, .05) 55%, transparent); opacity: 0; }
+.intro__peca { position: absolute; inset: 0; opacity: 0; }
+.intro__peca img { display: block; width: 100%; height: 100%; }
+.intro__peca--emblema { clip-path: inset(0 0 40.2% 0); transform-origin: 47.9% 28.7%; }
+.intro__peca--nome { clip-path: inset(59.8% 0 9.7% 0); }
+.intro__peca--linha { clip-path: inset(90.3% 0 0 0); }
+.intro__peca--brilho { filter: brightness(1.85) saturate(.55); -webkit-mask: linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%) 120% 0 / 260% 100% no-repeat; mask: linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%) 120% 0 / 260% 100% no-repeat; }
+.intro.a-correr .intro__logo::before { animation: intro-halo 2.6s ease .1s forwards; }
+.intro.a-correr .intro__peca--emblema { animation: intro-emblema 1.6s cubic-bezier(.16, .84, .3, 1) forwards; }
+.intro.a-correr .intro__peca--nome { animation: intro-nome 1.3s cubic-bezier(.16, .84, .3, 1) .7s forwards; }
+.intro.a-correr .intro__peca--linha { animation: intro-linha 1.2s cubic-bezier(.16, .84, .3, 1) 1.15s forwards; }
+.intro.a-correr .intro__peca--brilho { animation: intro-brilho 1.3s cubic-bezier(.45, .05, .35, 1) 2s forwards; }
+@keyframes intro-halo { 0% { opacity: 0; } 45% { opacity: 1; } 100% { opacity: .7; } }
+@keyframes intro-emblema { from { opacity: 0; transform: scale(.9); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes intro-nome { from { opacity: 0; clip-path: inset(59.8% 50% 9.7% 50%); } to { opacity: 1; clip-path: inset(59.8% 0 9.7% 0); } }
+@keyframes intro-linha { from { opacity: 0; clip-path: inset(90.3% 50% 0 50%); } to { opacity: 1; clip-path: inset(90.3% 0 0 0); } }
+@keyframes intro-brilho { from { opacity: 1; -webkit-mask-position: 120% 0; mask-position: 120% 0; } to { opacity: 1; -webkit-mask-position: -20% 0; mask-position: -20% 0; } }
+.intro.a-sair .intro__logo { transform: scale(1.035); transition: transform .8s cubic-bezier(.3, .6, .3, 1); }
 .intro__saltar {
   position: absolute; right: var(--margem); bottom: max(22px, calc(env(safe-area-inset-bottom) + 12px));
   min-height: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid rgba(226, 196, 140, .42);

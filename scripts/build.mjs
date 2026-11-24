@@ -6,8 +6,8 @@
 //   node scripts/build.mjs --producao --url=https://nevoagroup.pt   (indexável, com sitemap; o domínio do grupo)
 //
 // A proposta escolhida (content/site.json → "variante"; o Renato escolheu a A «Névoa» a 19 nov 2026) é o site.
-// O grupo (21 nov 2026, o João, dono da NEVOA): as divisões estão em content/servicos.json → divisoes; a intro são os
-// vídeos do logótipo dele (media/intro/), só na página inicial.
+// O grupo (21 nov 2026, o João, dono da NEVOA): as divisões estão em content/servicos.json → divisoes. A intro (só na
+// página inicial) é o logótipo verdadeiro dele em HTML e CSS (src/templates/layout.mjs, 24 nov 2026).
 // Só com --propostas (localmente, para comparar) as outras duas ficam inteiras em /propostas/<letra>/ e todas as
 // páginas levam a barra para trocar.
 //
@@ -58,13 +58,12 @@ const CACHE = join(RAIZ, '.cache', 'imagens');
 if (!existsSync(join(CACHE, 'manifesto.json'))) throw new Error('Falta .cache/imagens/manifesto.json: corre primeiro python3 scripts/imagens.py');
 const manifesto = JSON.parse(readFileSync(join(CACHE, 'manifesto.json'), 'utf8'));
 
-// ---- o que as regras não sabem: as versões para a web, os vídeos e a intro (é do repositório, não do painel) ----
+// ---- o que as regras não sabem: as versões para a web e os vídeos (são do repositório, não do painel) ----
 const erros = [];
 if (!VARIANTES[site.variante]) erros.push(`site.json: variante «${site.variante}» desconhecida (a, b ou c)`);
 for (const n of Object.keys(fotos)) if (!manifesto.fotos[n] || !manifesto.painel?.[n]) erros.push(`fotografia ${n}: não está no manifesto (corre scripts/imagens.py)`);
 for (const v of ['vidros', 'equipa']) if (!manifesto.videos[v]) erros.push(`vídeo ${v}: não está no manifesto`);
 for (const d of conteudo.divisoes) if (d.video && !manifesto.videos[d.video]) erros.push(`divisão ${d.slug}: o vídeo ${d.video} não existe`);
-for (const f of ['horizontal', 'vertical']) if (!existsSync(join(RAIZ, 'media', 'intro', f + '.mp4'))) erros.push(`intro: falta media/intro/${f}.mp4`);
 if (erros.length) { console.error('Só o Renato pode corrigir (não é do painel):\n- ' + erros.join('\n- ')); process.exit(1); }
 
 // ---- saída limpa ----
@@ -94,14 +93,6 @@ escreverAsset('site', readFileSync(join(RAIZ, 'src', 'scripts', 'site.js'), 'utf
 const variantes = opcoes.propostas ? [site.variante, ...Object.keys(VARIANTES).filter((k) => k !== site.variante)] : [site.variante];
 if (variantes.includes('a')) escreverAsset('nevoa', readFileSync(join(RAIZ, 'src', 'scripts', 'nevoa.js'), 'utf8'), 'js');
 if (variantes.includes('c')) escreverAsset('vidro', readFileSync(join(RAIZ, 'src', 'scripts', 'vidro.js'), 'utf8'), 'js');
-// a intro: os dois vídeos do logótipo (deitado para o computador, ao alto para o telemóvel), com resumo no nome
-assets.intro = {};
-for (const f of ['horizontal', 'vertical']) {
-  const buf = readFileSync(join(RAIZ, 'media', 'intro', f + '.mp4'));
-  const nome = `intro-${f}-${resumo(buf)}.mp4`;
-  writeFileSync(join(opcoes.saida, 'assets', 'video', nome), buf);
-  assets.intro[f] = nome;
-}
 
 // ---- páginas, por proposta ----
 const usados = new Set();

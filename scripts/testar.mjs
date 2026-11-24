@@ -89,8 +89,17 @@ for (const d of divisoes) {
   for (const p of paginas) prova(readFileSync(p, 'utf8').includes(`>${d.nome}</a></li>`), `${p.slice(SITE.length)}: o rodapé não tem a ${d.nome}`);
 }
 prova(inicio.includes(`<p class="rotulo">${C.divisoes.map((d) => escHtml(d.curto)).join(' · ')}</p>`), 'início: o sobretítulo da capa não tem as divisões');
-const intro = inicio.match(/data-horizontal="([^"]+)" data-vertical="([^"]+)"/);
-prova(intro && existe(intro[1]) && existe(intro[2]), 'início: a intro não tem os dois vídeos');
+// a intro (24 nov 2026): o logótipo verdadeiro (o completo, nunca redesenhado) em quatro peças da mesma imagem, com
+// todas as larguras do srcset e a PNG de recurso publicadas; já não é um vídeo
+const introHtml = (inicio.match(/<div class="intro" data-intro>[\s\S]*?<\/script>/) || [''])[0];
+const introFontes = [...introHtml.matchAll(/data-srcset="([^"]+)"/g)].map((m) => m[1]);
+const introUrls = [...new Set(introFontes.flatMap((s) => s.split(', ').map((x) => x.split(' ')[0])))];
+const introPng = [...new Set([...introHtml.matchAll(/data-src="([^"]+)"/g)].map((m) => m[1]))];
+prova(introFontes.length === 4 && new Set(introFontes).size === 1, 'início: a intro não tem as quatro peças da mesma imagem');
+prova(['emblema', 'nome', 'linha', 'brilho'].every((p) => introHtml.includes(`intro__peca--${p}`)), 'início: faltam peças na intro');
+prova(introUrls.length >= 4 && introUrls.every((u) => /\/completo-[0-9a-f]{10}-\d+\.webp$/.test(u) && existe(u)), 'início: as imagens da intro não são o logótipo completo ou não foram publicadas');
+prova(introPng.length === 1 && /\/completo-[0-9a-f]{10}-\d+\.png$/.test(introPng[0]) && existe(introPng[0]), 'início: falta a PNG de recurso da intro');
+prova(!/<video/.test(introHtml) && !/\.mp4/.test(introHtml), 'início: a intro já não é um vídeo');
 prova(!/data-intro/.test(ler('limpeza/index.html')), 'a intro só vai na página inicial');
 // os espaços (os cartões do João): todos na Limpeza e na página inicial; nas Empresas, os que dizem «empresas»; o atalho
 // da página inicial leva à página onde o cartão está

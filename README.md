@@ -5,8 +5,8 @@ Site da NEVOA Premium Services, um grupo com divisões (21 nov 2026, o João, do
 breve). Sede em Felgueiras, a trabalhar em todo o Norte. No ar em https://nevoagroup.pt desde 22 nov 2026 (o
 renatovalente5.github.io/nevoa/ reencaminha), indexável: mapa do site com as datas do git, Search Console e Bing, e o
 IndexNow avisa o Bing depois de cada publicação (`scripts/indexnow.mjs`). O desenho é a proposta A «Névoa»; as outras duas (B «Seda», C
-«Vidro») só se constroem com `--propostas`, localmente. A página inicial abre com a intro (os vídeos do logótipo
-deles, em `media/intro/`), uma vez por visita.
+«Vidro») só se constroem com `--propostas`, localmente. A página inicial abre com a intro (o logótipo
+verdadeiro deles a sair da névoa dourada, em HTML e CSS), uma vez por visita.
 
     python3 scripts/imagens.py          # versões AVIF/WebP das fotografias, da marca, ícones e cartão de partilha (.cache/imagens)
     node scripts/build.mjs              # o site em _site/ (--base, --url, --producao, --sem-propostas)

@@ -94,6 +94,18 @@ export function marca(ctx, chave, altura, { classe = '', alt = '' } = {}) {
   return `<picture${classe ? ` class="${classe}"` : ''}><source type="image/webp" srcset="${f(um, 'webp')} 1x, ${f(dois, 'webp')} 2x, ${f(tres, 'webp')} 3x"><img src="${f(dois, 'png')}" width="${w}" height="${altura}" alt="${esc(alt)}" decoding="async"></picture>`;
 }
 
+// A mesma peça como fontes por largura (para um tamanho que muda com o ecrã, como o logótipo da intro): o srcset em
+// WebP com «w», a PNG do meio para quem não lê WebP, e a largura/altura do desenho.
+export function marcaFontes(ctx, chave, alturas) {
+  const m = ctx.manifesto.marca[chave];
+  if (!m) throw new Error(`Peça da marca desconhecida: ${chave}`);
+  const ha = alturas.filter((a) => m.alturas.includes(a));
+  if (ha.length !== alturas.length) throw new Error(`${chave}: faltam alturas no manifesto (corre scripts/imagens.py)`);
+  const f = (a, fmt) => { const n = `${chave}-${m.resumo}-${a}.${fmt}`; ctx.usados.add(n); return ctx.asset('/assets/img/' + n); };
+  const meio = ha[Math.floor(ha.length / 2)];
+  return { srcset: ha.map((a) => `${f(a, 'webp')} ${Math.round(m.w * a / m.h)}w`).join(', '), src: f(meio, 'png'), w: m.w, h: m.h };
+}
+
 export const jsonLd = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`;
 
 // Ligação do WhatsApp com a mensagem já escrita (só se houver número).

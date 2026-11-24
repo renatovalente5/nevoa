@@ -44,7 +44,8 @@ ALTURAS_MARCA = {
     'palavra-escuro': (22, 24, 26, 28, 44, 48, 52, 56, 66, 72, 78, 84),
     'palavra-linha': (40, 48, 60, 72, 80, 96, 120, 144, 160, 180, 211),
     'palavra-linha-escuro': (40, 48, 60, 72, 80, 96, 120, 144, 160, 180, 211),
-    'completo': (96, 120, 160, 192, 240, 288, 320, 360, 480, 556),
+    # o completo vai também à intro (até ~320 px de altura): 640 e 823 (o original) para os ecrãs de 2× e 3×
+    'completo': (96, 120, 160, 192, 240, 288, 320, 360, 480, 556, 640, 823),
     'completo-escuro': (96, 120, 160, 192, 240, 288, 320, 360, 480, 556),
     # o emblema da capa vai até ~290 px de altura: 640 e 720 para os ecrãs de 2× e 3× (o original tem 1108 px)
     'emblema': (32, 40, 48, 64, 80, 96, 120, 144, 160, 240, 320, 480, 640, 720),

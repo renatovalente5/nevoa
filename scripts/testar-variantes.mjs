@@ -67,7 +67,7 @@ for (const [nome, mudar, { para, avisos } = {}] of VARIANTES) {
   try {
     for (const d of ['content', 'src', 'scripts', 'legal-comum']) cpSync(join(RAIZ, d), join(pasta, d), { recursive: true });
     mkdirSync(join(pasta, 'media'));
-    for (const d of ['fotos', 'videos', 'intro', 'marca']) symlinkSync(join(RAIZ, 'media', d), join(pasta, 'media', d));
+    for (const d of ['fotos', 'videos', 'marca']) symlinkSync(join(RAIZ, 'media', d), join(pasta, 'media', d));
     mkdirSync(join(pasta, '.cache'));
     symlinkSync(join(RAIZ, '.cache', 'imagens'), join(pasta, '.cache', 'imagens'));
     const ler = (f) => JSON.parse(readFileSync(join(pasta, f), 'utf8'));
